@@ -1,41 +1,44 @@
 
-const task1kName: string = "Learn TypeScript";
-const task1Priority: number = 1;
-const task1Completed: boolean = false;
+type Task = {
+    name: string;
+    priority: number;
+    completed: boolean;
+}
 
-const task2kName: string = "Walk the dog";
-const task2Priority: number = 1;
-const task2Completed: boolean = true;
+const tasks : Task[] = [
+    {
+        name: "Learn TypeScript",
+        priority: 1,
+        completed: false
+    },
+    {
+        name: "Walk the dog",
+        priority: 1,
+        completed: true
+    },
+    {
+        name: "Cook dinner",
+        priority: 2,
+        completed: false
+    }
+];
 
-const task3kName: string = "Cook dinner";
-const task3Priority: number = 2;
-const task3Completed: boolean = false;
 
-const completedTasks: number = 1;
-const totalTasks: number = 3;
+function printTasks(tasks: Task[]): void {
+    console.log("Task List:");
+    tasks.forEach(task => {
+        console.log(`
+            Task: ${task.name}
+            - Priority: ${task.priority}
+            - Completed: ${task.completed}
+            `
+        );
+    });
+}
 
-const completionRate: number = completedTasks / totalTasks * 100;
+function countCompletedTasks(tasks: Task[]): number {
+    return tasks.filter(task => task.completed).length;
+}
 
-console.log("========================");
-console.log("TASK TRACKER!");
-console.log("========================");
-
-console.log(`
-    Task: ${task1kName}
-    Priority: ${task1Priority}
-    Completed: ${task1Completed}
-    `);
-
-console.log(`
-    Task: ${task2kName}
-    Priority: ${task2Priority}
-    Completed: ${task2Completed}
-    `);
-
-console.log(`
-    Task: ${task3kName}
-    Priority: ${task3Priority}
-    Completed: ${task3Completed}
-    `);
-
-console.log(`Completed rate: ${completionRate}%`);
+console.log(`Completed Tasks: ${countCompletedTasks(tasks)}`);
+printTasks(tasks);
