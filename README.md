@@ -9,3 +9,7 @@ Instruktioner:
 Dag 1: [Intro](https://github.com/Lexicon-Utbildning-Front-end-2026/Typescript-dag1-ovning)
 
 Dag 2: [Variabler och typer](https://github.com/Lexicon-Utbildning-Front-end-2026/typescript-dag2-ovning)
+
+Dag 3: [Arrayer, if-satser, loopar](https://github.com/Lexicon-Utbildning-Front-end-2026/typescript-dag3-ovning)
+
+Extrauppgift: [Extrauppgift på arrayer, if, loopar](https://github.com/Lexicon-Utbildning-Front-end-2026/typescript-dag3-extrauppgift)
