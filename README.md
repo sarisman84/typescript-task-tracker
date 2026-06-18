@@ -13,3 +13,7 @@ Dag 2: [Variabler och typer](https://github.com/Lexicon-Utbildning-Front-end-202
 Dag 3: [Arrayer, if-satser, loopar](https://github.com/Lexicon-Utbildning-Front-end-2026/typescript-dag3-ovning)
 
 Extrauppgift: [Extrauppgift på arrayer, if, loopar](https://github.com/Lexicon-Utbildning-Front-end-2026/typescript-dag3-extrauppgift)
+
+Dag 4: [Funktioner](https://github.com/Lexicon-Utbildning-Front-end-2026/typescript-dag4-ovning)
+
+Extrauppgift: [Extrauppgift på funktioner](https://github.com/Lexicon-Utbildning-Front-end-2026/typescript-dag4-extrauppgift)
