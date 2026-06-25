@@ -61,6 +61,7 @@ img {
   --font-size-base: 16px; /* Base font size */
   --font-size-title: 2rem; /* Heading title size */
   --font-size-subtitle: 1.25rem; /* Subheading size */
+  --font-size-xs: 0.75rem; /* Extra small text, used for metadata like dates */
 
   /* Typography Weight */
   --font-weight-bold: bold; /* Bold text weight */
@@ -77,12 +78,41 @@ img {
   --color-bg-task: var(--background-500); /* Individual task card background */
 
   /* Status Indicator Colors */
-  --color-status-pending: var(--primary-300); /* Pending status color */
+  --color-status-pending: var(--primary-200); /* Pending status color */
+  --color-status-pending--hover: var(--primary-300);
+  --color-status-pending--focus-visible: var(--primary-300);
+
   --color-status-completed: var(--secondary-500); /* Completed status color */
+  --color-status-completed--hover: var(--secondary-400);
+  --color-status-completed--focus-visible: var(--secondary-300);
+
   --color-status-in-progress: var(--accent-500); /* In-progress status color */
+  --color-status-in-progress--hover: var(--accent-400);
+  --color-status-in-progress--focus-visible: var(--accent-300);
 
   /* Layout Constraints */
   --max-width-task-list: 15rem; /* Maximum width for task list column */
+
+  /* Component Specific Tokens (Previously Hardcoded) */
+  --border-radius-card: var(
+    --ch-unit
+  ); /* Standard border radius for cards and inputs */
+  --padding-content: var(--ch-unit); /* Standard padding for content areas */
+
+  /* Task List Grid Configuration */
+  --task-list-min-col-width: 30ch; /* Minimum width for a task list column in auto-fit grid */
+
+  /* Task Title Input Configuration */
+  --width-title-input: 75%; /* Width of the title input field relative to container */
+
+  /* Border Configurations */
+  --border-width-thin: 0.2ch; /* Thin border width for dividers */
+  --border-color-task-header: var(
+    --secondary-700
+  ); /* Color for task list header dividers */
+
+  /* Status Badge Padding */
+  --padding-status-badge: var(--ch-unit); /* Padding for status badges */
 }
 
 /* ==========================================
@@ -104,6 +134,45 @@ img {
 
 .u-bold {
   font-weight: var(--font-weight-bold);
+}
+
+.u-button {
+  font-weight: bolder;
+
+  color: var(--text-900);
+  background-color: transparent;
+
+  border-color: transparent;
+  border-radius: 0.5ch;
+}
+
+.u-button--delete {
+  background-color: var(--delete-500);
+}
+
+.u-button--delete:hover {
+  background-color: var(--delete-400);
+}
+
+.u-button--delete:focus-visible {
+  background-color: var(--delete-300);
+}
+
+.u-button--create {
+  color: var(--text-200);
+  background-color: var(--primary-600);
+}
+
+.u-button--create:hover {
+  background-color: var(--primary-500);
+}
+
+.u-button--create:focus-visible {
+  background-color: var(--primary-400);
+}
+
+.u-transparent {
+  background-color: transparent;
 }
 
 /* ==========================================
@@ -142,13 +211,18 @@ body {
    ========================================== */
 .task-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, var(--task-list-width, 30ch));
+
+  /* Uses the defined minimum column width with auto-fit */
+  grid-template-columns: repeat(auto-fit, var(--task-list-min-col-width));
   gap: var(--space-unit);
+
   align-items: start;
   align-content: start;
+
   background-color: var(--color-bg-task-list);
-  border-radius: var(--ch-unit);
-  padding: var(--ch-unit);
+
+  border-radius: var(--border-radius-card);
+  padding: var(--padding-content);
   margin-block-end: var(--space-unit);
 }
 
@@ -158,13 +232,30 @@ body {
   width: 100%;
 
   padding-block-end: var(--ch-unit);
-  border-block-end: 0.2ch solid var(--secondary-700);
+
+  border-block-end: var(--border-width-thin) solid
+    var(--border-color-task-header);
 }
 
 .task-list__title {
   font-size: 1.25rem;
   color: var(--text-900);
   font-weight: var(--font-weight-bold);
+
+  background-color: transparent;
+  border-color: transparent;
+
+  /* Uses the defined width variable */
+  width: var(--width-title-input);
+}
+
+.task-list__title:hover {
+  color: var(--accent-800);
+}
+
+.task-list__title:focus-visible {
+  color: var(--accent-700);
+  outline: none;
 }
 
 /* ==========================================
@@ -181,18 +272,46 @@ body {
   justify-items: start;
 
   background-color: var(--color-bg-task);
-  border-radius: var(--ch-unit);
-  padding: var(--ch-unit);
+
+  border-radius: var(--border-radius-card);
+  padding: var(--padding-content);
 
   width: 100%;
 }
 
-.task--center {
+.task--empty {
+  display: flex;
   justify-content: center;
+  width: 100%;
+}
+
+.task__date {
+  font-size: var(--font-size-xs);
+  font-weight: bold;
+  color: var(--text-200);
 }
 
 .task__description {
   width: 100%;
+
+  padding: var(--padding-content);
+
+  color: var(--text-900);
+  background-color: var(--background-400);
+
+  border-color: transparent;
+
+  border-radius: var(--border-radius-card);
+}
+
+.task__description:hover {
+  color: var(--accent-900);
+}
+
+.task__description:focus-visible {
+  color: var(--accent-900);
+  background-color: var(--background-300);
+  outline: none;
 }
 
 .task__footer {
@@ -219,12 +338,46 @@ body {
   color: var(--text-900);
 }
 
+.task__status[data-type="pending"]:hover {
+  background-color: var(--color-status-pending--hover);
+  color: var(--text-900);
+}
+
+.task__status[data-type="pending"]:focus-visible {
+  background-color: var(--color-status-pending--focus-visible);
+  color: var(--text-900);
+  outline: none;
+}
+
 /* Completed status - uses secondary color palette */
 .task__status[data-type="completed"] {
   background-color: var(--color-status-completed);
 }
 
+.task__status[data-type="completed"]:hover {
+  background-color: var(--color-status-completed--hover);
+  color: var(--text-900);
+}
+
+.task__status[data-type="completed"]:focus-visible {
+  background-color: var(--color-status-completed--focus-visible);
+  color: var(--text-900);
+  outline: none;
+}
+
 /* In-progress status - uses accent color palette */
 .task__status[data-type="in-progress"] {
+  color: var(--text-900);
   background-color: var(--color-status-in-progress);
+}
+
+.task__status[data-type="in-progress"]:hover {
+  background-color: var(--color-status-in-progress--hover);
+  color: var(--text-900);
+}
+
+.task__status[data-type="in-progress"]:focus-visible {
+  background-color: var(--color-status-in-progress--focus-visible);
+  color: var(--text-900);
+  outline: none;
 }

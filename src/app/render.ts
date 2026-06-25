@@ -52,7 +52,8 @@ function renderEmptyTaskList(): { list: TaskList; element: HTMLElement } {
   const section: HTMLElement = HTML.createElement("section", ["task-list"]);
   {
     const newListButton: HTMLButtonElement = HTML.createElement("button", [
-      "task-list__new-list-button",
+      "u-button",
+      "u-button--create",
     ]) as HTMLButtonElement;
     newListButton.textContent = "New List";
     newListButton.addEventListener("click", (event) => {
@@ -77,12 +78,13 @@ function renderEmptyTask(id: number = -1) {
     id = createTaskList(desc).id;
   }
   const section: HTMLElement = HTML.createElement("section", [
-    "task",
-    "task--center",
+    "u-transparent",
+    "task--empty",
   ]);
   {
     const newTaskButton: HTMLButtonElement = HTML.createElement("button", [
-      "task__new-task-button",
+      "u-button",
+      "u-button--create",
     ]) as HTMLButtonElement;
 
     newTaskButton.textContent = "New Task";
@@ -117,12 +119,6 @@ export function renderRelatedTask(
     const header: HTMLElement = renderHeaderOfTask(relatedTask);
     const footer: HTMLElement = renderFooterOfTask(relatedTask);
 
-    const label: HTMLLabelElement = HTML.createElement("label", [
-      "task__label",
-    ]) as HTMLLabelElement;
-    label.htmlFor = `${relatedTask.id}-desc`;
-    label.textContent = "Description:";
-
     const content: HTMLTextAreaElement = HTML.createElement("textarea", [
       "task__description",
     ]) as HTMLTextAreaElement;
@@ -131,8 +127,6 @@ export function renderRelatedTask(
     content.rows = 5;
 
     content.addEventListener("keydown", (event: KeyboardEvent) => {
-
-
       if (event.key !== "Enter") {
         return;
       }
@@ -146,7 +140,7 @@ export function renderRelatedTask(
       console.log(`Task ${relatedTask.id} updated!`);
     });
 
-    article.append(header, label, content, footer);
+    article.append(header, content, footer);
   }
 
   entry.append(article);
@@ -191,7 +185,8 @@ function renderList(taskList: TaskList): HTMLUListElement {
     });
 
     const deleteButton: HTMLButtonElement = HTML.createElement("button", [
-      "task-list__delete-button",
+      "u-button",
+      "u-button--delete",
     ]) as HTMLButtonElement;
     deleteButton.textContent = "Delete";
     deleteButton.addEventListener("click", (event) => {
@@ -225,7 +220,8 @@ function renderFooterOfTask(relatedTask: Task) {
   select.setAttribute("data-type", relatedTask.status);
 
   const deleteButton: HTMLButtonElement = HTML.createElement("button", [
-    "task__delete-button",
+    "u-button",
+    "u-button--delete",
   ]) as HTMLButtonElement;
   deleteButton.textContent = "Delete"; // Set button text to "Edit"
   deleteButton.addEventListener("click", (event) => {

@@ -124,3 +124,19 @@
     --accent-950: oklab(95.17% 0.003 -0.01);
   }
 }
+
+:root {
+  --delete-50: oklab(14.6% 0.024 0.018);
+  --delete-100: oklab(20.9% 0.033 0.025);
+  --delete-200: oklab(32.4% 0.047 0.036);
+  --delete-300: oklab(43.1% 0.062 0.048);
+  --delete-400: oklab(53.1% 0.079 0.062);
+  --delete-500: oklab(62.5% 0.095 0.077);
+  --delete-600: oklab(70.2% 0.11 0.092);
+  --delete-700: oklab(78.3% 0.124 0.108);
+  --delete-800: oklab(86.2% 0.136 0.125);
+  --delete-900: oklab(93.5% 0.147 0.143);
+  --delete-950: oklab(96.7% 0.154 0.153);
+
+  --create-color: oklab(68.9% -0.122 0.07); /* Using the existing primary color */
+}
