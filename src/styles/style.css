@@ -176,7 +176,7 @@ body {
   width: 100%;
 }
 
-.task-description {
+.task__description {
   /* No additional styles applied */
 }
 
@@ -185,7 +185,7 @@ body {
    Color-coded status indicators using data attributes.
    Supports three states: pending, completed, in-progress.
    ========================================== */
-.task-status {
+.task__status {
   padding: var(--ch-unit);
   border-radius: var(--ch-unit);
   text-transform: capitalize;
@@ -193,17 +193,17 @@ body {
 }
 
 /* Pending status - uses primary color palette */
-.task-status[data-type="pending"] {
+.task__status[data-type="pending"] {
   background-color: var(--color-status-pending);
   color: var(--text-900);
 }
 
 /* Completed status - uses secondary color palette */
-.task-status[data-type="completed"] {
+.task__status[data-type="completed"] {
   background-color: var(--color-status-completed);
 }
 
 /* In-progress status - uses accent color palette */
-.task-status[data-type="in-progress"] {
+.task__status[data-type="in-progress"] {
   background-color: var(--color-status-in-progress);
 }
