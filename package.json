@@ -11,16 +11,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Lexicon-Utbildning-Front-end-2026/typescript-task-tracker.git"
+    "url": "git+https://github.com/sarisman84/typescript-task-tracker.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "module",
   "bugs": {
-    "url": "https://github.com/Lexicon-Utbildning-Front-end-2026/typescript-task-tracker/issues"
+    "url": "https://github.com/sarisman84/typescript-task-tracker/issues"
   },
-  "homepage": "https://github.com/Lexicon-Utbildning-Front-end-2026/typescript-task-tracker#readme",
+  "homepage": "https://sarisman84.github.io/typescript-task-tracker/",
   "devDependencies": {
     "@types/node": "^25.9.3",
     "typescript": "^6.0.3",
