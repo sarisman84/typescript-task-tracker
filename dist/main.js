@@ -1,13 +1,9 @@
 import { renderDefaultState } from "./render.js";
-
 renderDefaultState(true);
-
 // Example usage
 // Generate a large set of tasks and task lists
-
 // Create multiple task lists
 // const listNames = ["Backlog", "To-Do", "Doing", "Done"];
-
 // listNames.forEach((name) => {
 //   const desc: CreateTaskListDesc = {
 //     app,
@@ -15,10 +11,8 @@ renderDefaultState(true);
 //     tasks,
 //     name,
 //   };
-
 //   createTaskList(desc);
 // });
-
 // const taskDescriptions = [
 //   "Gather information from reliable sources",
 //   "Complete the final draft of the report",
@@ -31,14 +25,11 @@ renderDefaultState(true);
 //   "Enroll in online course or tutorial",
 //   "Sort through old documents and files",
 // ];
-
 // const taskAmount = 15; // Number of tasks to create
-
 // // Create a number of tasks
 // for (let i = 0; i < taskAmount; i++) {
 //   const listId = Math.floor(Math.random() * taskLists.length) + 1;
 //   const description = `${taskDescriptions[Math.floor(Math.random() * taskDescriptions.length)]} ${i + 1}.`;
-
 //   // Determine status based on list name
 //   let status: Status = "pending";
 //   switch (listId) {
@@ -55,7 +46,6 @@ renderDefaultState(true);
 //     default:
 //       status = "pending";
 //   }
-
 //   const createTaskDesc: CreateTaskDesc = {
 //     app,
 //     taskLists,
@@ -66,3 +56,4 @@ renderDefaultState(true);
 //   };
 //   createTask(createTaskDesc);
 // }
+//# sourceMappingURL=main.js.map
