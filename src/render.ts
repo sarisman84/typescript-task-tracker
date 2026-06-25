@@ -1,4 +1,4 @@
-import { app, taskLists, tasks, type Task, type TaskList } from "./data.js";
+import { app, taskLists, tasks, type Status, type Task, type TaskList } from "./data.js";
 import {
   createTask,
   createTaskList,
@@ -213,6 +213,7 @@ function renderFooterOfTask(relatedTask: Task) {
     "",
     (newStatus: string) => {
       select.setAttribute("data-type", newStatus);
+      relatedTask.status = newStatus as Status;
     },
   );
 

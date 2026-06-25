@@ -158,6 +158,7 @@ function renderFooterOfTask(relatedTask) {
     const footer = HTML.createElement("footer", ["task__footer"]);
     const select = HTML.createDropdown(["task__status"], ["pending", "in-progress", "completed"], "", (newStatus) => {
         select.setAttribute("data-type", newStatus);
+        relatedTask.status = newStatus;
     });
     select.value = relatedTask.status;
     select.setAttribute("data-type", relatedTask.status);
