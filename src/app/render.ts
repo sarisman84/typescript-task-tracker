@@ -9,22 +9,26 @@ import {
   type DeleteTaskDesc,
   type DeleteTaskListDesc,
 } from "./tasktracker.js";
-import { createDropdown, createElement } from "./utility.js";
+import { HTML, Utility } from "./utility.js";
 
-export interface TaskDesc {
-  taskLists: TaskList[];
-  app: HTMLDivElement;
-  tasks: Task[];
+export function renderDefaultState(fullClear: boolean = false): void {
+  if (fullClear) {
+    app.innerHTML = "";
+  }
+
+  const { list, element } = renderEmptyTaskList();
+
+  app.append(element);
 }
 
 /**
  * Renders all tasks and task lists into the application container.
  */
-export function renderTasks(taskDescription: TaskDesc): void {
-  taskDescription.app.innerHTML = ""; // Clear the app container before rendering
-  taskDescription.taskLists.forEach((taskList: TaskList) => {
+export function renderTasks(): void {
+  app.innerHTML = ""; // Clear the app container before rendering
+  taskLists.forEach((taskList: TaskList) => {
     const taskListElement: HTMLUListElement = renderList(taskList);
-    const relatedTasks: Task[] = taskDescription.tasks.filter(
+    const relatedTasks: Task[] = tasks.filter(
       (task) => task.listId === taskList.id,
     );
 
@@ -32,56 +36,69 @@ export function renderTasks(taskDescription: TaskDesc): void {
       renderRelatedTask(task, taskListElement);
     });
 
-    const section: HTMLElement = createElement("section", [
-      "task",
-      "task--center",
-    ]);
-    {
-      const newTaskButton: HTMLButtonElement = createElement("button", [
-        "task__new-task-button",
-      ]) as HTMLButtonElement;
+    const emptyTask: HTMLElement = renderEmptyTask(taskList.id);
+    taskListElement.append(emptyTask);
 
-      newTaskButton.textContent = "New Task";
-      newTaskButton.addEventListener("click", (event) => {
-        const newTaskDesc: CreateTaskDesc = {
-          description: "New Task",
-          listId: taskList.id,
-          status: "pending",
-          app,
-          tasks,
-          taskLists,
-        };
-
-        createTask(newTaskDesc);
-      });
-
-      section.append(newTaskButton);
-      taskListElement.append(section);
-    }
-
-    taskDescription.app.append(taskListElement);
+    app.append(taskListElement);
   });
 
-  const section: HTMLElement = createElement("section", ["task-list"]);
+  const { list, element } = renderEmptyTaskList();
+
+  app.append(element);
+}
+
+function renderEmptyTaskList(): { list: TaskList; element: HTMLElement } {
+  let taskList: TaskList = { id: -1, name: "", createdAt: new Date() };
+  const section: HTMLElement = HTML.createElement("section", ["task-list"]);
   {
-    const newListButton: HTMLButtonElement = createElement("button", [
+    const newListButton: HTMLButtonElement = HTML.createElement("button", [
       "task-list__new-list-button",
     ]) as HTMLButtonElement;
     newListButton.textContent = "New List";
     newListButton.addEventListener("click", (event) => {
       const description: CreateTaskListDesc = {
         name: "New List",
-        app,
-        taskLists,
-        tasks,
       };
 
-      createTaskList(description);
+      taskList = createTaskList(description);
     });
 
     section.append(newListButton);
   }
-  taskDescription.app.append(section);
+  return { list: taskList, element: section };
+}
+
+function renderEmptyTask(id: number = -1) {
+  if (id === -1) {
+    const desc: CreateTaskListDesc = {
+      name: "New List",
+    };
+
+    id = createTaskList(desc).id;
+  }
+  const section: HTMLElement = HTML.createElement("section", [
+    "task",
+    "task--center",
+  ]);
+  {
+    const newTaskButton: HTMLButtonElement = HTML.createElement("button", [
+      "task__new-task-button",
+    ]) as HTMLButtonElement;
+
+    newTaskButton.textContent = "New Task";
+    newTaskButton.addEventListener("click", (event) => {
+      const newTaskDesc: CreateTaskDesc = {
+        description: "New Task",
+        listId: id,
+        status: "pending",
+      };
+
+      createTask(newTaskDesc);
+    });
+
+    section.append(newTaskButton);
+  }
+  return section;
 }
 
 /**
@@ -95,17 +112,41 @@ export function renderRelatedTask(
 ): void {
   const entry: HTMLLIElement = document.createElement("li");
 
-  const article: HTMLElement = createElement("article", ["task"]); // Create article element with class "task"
+  const article: HTMLElement = HTML.createElement("article", ["task"]); // Create article element with class "task"
   {
     const header: HTMLElement = renderHeaderOfTask(relatedTask);
     const footer: HTMLElement = renderFooterOfTask(relatedTask);
 
-    const content: HTMLParagraphElement = createElement("p", [
-      "task__description",
-    ]) as HTMLParagraphElement;
-    content.textContent = relatedTask.description;
+    const label: HTMLLabelElement = HTML.createElement("label", [
+      "task__label",
+    ]) as HTMLLabelElement;
+    label.htmlFor = `${relatedTask.id}-desc`;
+    label.textContent = "Description:";
 
-    article.append(header, content, footer);
+    const content: HTMLTextAreaElement = HTML.createElement("textarea", [
+      "task__description",
+    ]) as HTMLTextAreaElement;
+    content.id = `${relatedTask.id}-desc`;
+    content.textContent = relatedTask.description;
+    content.rows = 5;
+
+    content.addEventListener("keydown", (event: KeyboardEvent) => {
+
+
+      if (event.key !== "Enter") {
+        return;
+      }
+
+      if (Utility.isNullOrEmpty(content.value)) {
+        return;
+      }
+
+      relatedTask.description = content.value;
+      renderTasks();
+      console.log(`Task ${relatedTask.id} updated!`);
+    });
+
+    article.append(header, label, content, footer);
   }
 
   entry.append(article);
@@ -127,27 +168,35 @@ function renderList(taskList: TaskList): HTMLUListElement {
   taskListElement.setAttribute("data-list-id", taskList.id.toString());
   taskListElement.classList.add("task-list"); // Add class for styling
 
-  //   const listHeader: HTMLHeadingElement = document.createElement("h2");
-  //   listHeader.textContent = taskList.name;
-  //   listHeader.classList.add("task-list__title"); // Add class for styling
-  //   taskListElement.append(listHeader);
-
-  const header: HTMLElement = createElement("header", ["task-list__header"]);
+  const header: HTMLElement = HTML.createElement("header", [
+    "task-list__header",
+  ]);
   {
-    const listHeader: HTMLHeadingElement = document.createElement("h2");
-    listHeader.textContent = taskList.name;
-    listHeader.classList.add("task-list__title"); // Add class for styling
+    const listHeader: HTMLInputElement = HTML.createElement("input", [
+      "task-list__title",
+    ]) as HTMLInputElement;
+    listHeader.value = taskList.name;
+    listHeader.addEventListener("keydown", (event: KeyboardEvent) => {
+      if (event.key !== "Enter") {
+        return;
+      }
+      const trueValue = listHeader.value.trim();
 
-    const deleteButton: HTMLButtonElement = createElement("button", [
+      if (Utility.isNullOrEmpty(trueValue)) {
+        return;
+      }
+      taskList.name = listHeader.value;
+      renderTasks();
+      console.log(`List ${taskList.id} updated!`);
+    });
+
+    const deleteButton: HTMLButtonElement = HTML.createElement("button", [
       "task-list__delete-button",
     ]) as HTMLButtonElement;
     deleteButton.textContent = "Delete";
     deleteButton.addEventListener("click", (event) => {
       const description: DeleteTaskListDesc = {
         listId: taskList.id,
-        app,
-        tasks,
-        taskLists,
       };
 
       deleteTaskList(description);
@@ -161,29 +210,26 @@ function renderList(taskList: TaskList): HTMLUListElement {
 }
 
 function renderFooterOfTask(relatedTask: Task) {
-  const footer: HTMLElement = createElement("footer", ["task__footer"]);
+  const footer: HTMLElement = HTML.createElement("footer", ["task__footer"]);
 
-  const select: HTMLSelectElement = createDropdown(
+  const select: HTMLSelectElement = HTML.createDropdown(
     ["task__status"],
     ["pending", "in-progress", "completed"],
     "",
     (newStatus: string) => {
       select.setAttribute("data-type", newStatus);
     },
-  ); // Create dropdown with status options"], [)
+  );
 
   select.value = relatedTask.status;
   select.setAttribute("data-type", relatedTask.status);
 
-  const deleteButton: HTMLButtonElement = createElement("button", [
+  const deleteButton: HTMLButtonElement = HTML.createElement("button", [
     "task__delete-button",
   ]) as HTMLButtonElement;
   deleteButton.textContent = "Delete"; // Set button text to "Edit"
   deleteButton.addEventListener("click", (event) => {
     const deleteTaskDesc: DeleteTaskDesc = {
-      app,
-      tasks,
-      taskLists,
       taskId: relatedTask.id,
       updateRender: true,
     };
@@ -197,10 +243,10 @@ function renderFooterOfTask(relatedTask: Task) {
 }
 
 function renderHeaderOfTask(relatedTask: Task) {
-  const header: HTMLElement = createElement("header", ["task__header"]);
+  const header: HTMLElement = HTML.createElement("header", ["task__header"]);
   header.setAttribute("aria-label", relatedTask.description); // Set data-id attribute to task id
 
-  const date: HTMLElement = createElement("time", [
+  const date: HTMLElement = HTML.createElement("time", [
     "task__date",
   ]) as HTMLElement;
   date.setAttribute("datetime", relatedTask.createdAt.toISOString());

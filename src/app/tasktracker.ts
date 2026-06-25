@@ -1,26 +1,32 @@
-import type { TaskList, Status, Task } from "./data.js";
-import { renderTasks, type TaskDesc } from "./render.js";
+import {
+  type TaskList,
+  type Status,
+  type Task,
+  taskLists,
+  tasks,
+} from "./data.js";
+import { renderTasks } from "./render.js";
 
-export interface CreateTaskListDesc extends TaskDesc {
+export interface CreateTaskListDesc {
   name: string;
 }
 
-export interface DeleteTaskListDesc extends TaskDesc {
+export interface DeleteTaskListDesc {
   listId: number;
 }
 
-export interface CreateTaskDesc extends TaskDesc {
+export interface CreateTaskDesc {
   description: string;
   status: Status;
   listId: number;
 }
 
-export interface DeleteTaskDesc extends TaskDesc {
+export interface DeleteTaskDesc {
   taskId: number;
   updateRender: boolean;
 }
 
-export interface UpdateTaskStatusDesc extends TaskDesc {
+export interface UpdateTaskStatusDesc {
   taskId: number;
   newStatus: Status;
 }
@@ -32,20 +38,22 @@ let incrementedTaskId: number = 0;
  * Creates a new task list with the specified name.
  * @param name - The name of the task list to create.
  */
-export function createTaskList(description: CreateTaskListDesc): void {
+export function createTaskList(description: CreateTaskListDesc): TaskList {
   const taskList: TaskList = {
     id: ++incrementedListId,
     name: description.name,
     createdAt: new Date(),
   };
-  description.taskLists.push(taskList);
+  taskLists.push(taskList);
   console.log(`Task list "${taskList.name}" created with ID: ${taskList.id}`);
 
-  renderTasks(description);
+  renderTasks();
+
+  return taskList;
 }
 
 export function deleteTaskList(description: DeleteTaskListDesc): void {
-  const foundIndex = description.taskLists.findIndex(
+  const foundIndex = taskLists.findIndex(
     (list) => list.id === description.listId,
   );
 
@@ -53,23 +61,20 @@ export function deleteTaskList(description: DeleteTaskListDesc): void {
     return;
   }
 
-  const deletedListItems: number[] = description.tasks
+  const deletedListItems: number[] = tasks
     .filter((task) => task.listId === description.listId)
     .map((task) => task.id);
 
   deletedListItems.forEach((id) => {
     const deleteDesc: DeleteTaskDesc = {
-      tasks: description.tasks,
-      app: description.app,
-      taskLists: description.taskLists,
       taskId: id,
       updateRender: false,
     };
     deleteTask(deleteDesc);
   });
 
-  description.taskLists.splice(foundIndex, 1); // Remove the task from the array
-  renderTasks(description);
+  taskLists.splice(foundIndex, 1); // Remove the task from the array
+  renderTasks();
 }
 
 /**
@@ -89,38 +94,34 @@ export function createTask(description: CreateTaskDesc): void {
     editFlag: false,
   };
 
-  description.tasks.push(task);
+  tasks.push(task);
   console.log(
     `Task "${task.id}" created with ID: ${task.id} in list ID: ${task.listId}`,
   );
 
-  renderTasks(description);
+  renderTasks();
 }
 
 export function deleteTask(description: DeleteTaskDesc): void {
-  const foundIndex = description.tasks.findIndex(
-    (task) => task.id === description.taskId,
-  );
+  const foundIndex = tasks.findIndex((task) => task.id === description.taskId);
   if (foundIndex === -1) {
     return;
   }
 
-  description.tasks.splice(foundIndex, 1); // Remove the task from the array
+  tasks.splice(foundIndex, 1); // Remove the task from the array
   if (description.updateRender) {
-    renderTasks(description); // Re-render the ap
+    renderTasks(); // Re-render the ap
   }
 
   console.log(`Task ${description.taskId} deleted successfully`);
 }
 
 export function updateTaskStatus(description: UpdateTaskStatusDesc): void {
-  const task: Task | undefined = description.tasks.find(
-    (t) => t.id === description.taskId,
-  );
+  const task: Task | undefined = tasks.find((t) => t.id === description.taskId);
   if (task === undefined) {
     console.error(`Task with ID ${description.taskId} not found`);
     return;
   }
   task.status = description.newStatus;
-  renderTasks(description);
+  renderTasks();
 }
