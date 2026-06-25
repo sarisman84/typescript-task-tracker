@@ -1,7 +1,9 @@
 import { app, taskLists, tasks, type Task, type TaskList } from "./data.js";
 import {
+  createTaskList,
   deleteTask,
   deleteTaskList,
+  type CreateTaskListDesc,
   type DeleteTaskDesc,
   type DeleteTaskListDesc,
 } from "./tasktracker.js";
@@ -30,6 +32,59 @@ export function renderTasks(taskDescription: TaskDesc): void {
 
     taskDescription.app.append(taskListElement);
   });
+
+  const section: HTMLElement = createElement("section", ["task-list"]);
+  {
+    const newListButton: HTMLButtonElement = createElement("button", [
+      "task-list__new-list-button",
+    ]) as HTMLButtonElement;
+    newListButton.textContent = "New List";
+    newListButton.addEventListener("click", (event) => {
+      const description: CreateTaskListDesc = {
+        name: "New List",
+        app,
+        taskLists,
+        tasks,
+      };
+
+      createTaskList(description);
+    });
+
+    section.append(newListButton);
+  }
+  taskDescription.app.append(section);
+}
+
+/**
+ * Renders a single task within a task list.
+ * @param relatedTask - The task to render.
+ * @param taskListElement - The HTML element representing the parent task list.
+ */
+export function renderRelatedTask(
+  relatedTask: Task,
+  taskListElement: HTMLUListElement,
+): void {
+  const entry: HTMLLIElement = document.createElement("li");
+
+  const article: HTMLElement = createElement("article", ["task"]); // Create article element with class "task"
+  {
+    const header: HTMLElement = renderHeaderOfTask(relatedTask);
+    const footer: HTMLElement = renderFooterOfTask(relatedTask);
+
+    const content: HTMLParagraphElement = createElement("p", [
+      "task__description",
+    ]) as HTMLParagraphElement;
+    content.textContent = relatedTask.description;
+
+    article.append(header, content, footer);
+  }
+
+  entry.append(article);
+
+  taskListElement.append(entry);
+  console.log(
+    `Task "${relatedTask.id}" added to list "${taskListElement.getAttribute("data-list-id")}"`,
+  );
 }
 
 /**
@@ -37,7 +92,7 @@ export function renderTasks(taskDescription: TaskDesc): void {
  * @param taskList - The task list to render.
  * @returns An HTMLUListElement representing the rendered task list.
  */
-export function renderList(taskList: TaskList): HTMLUListElement {
+function renderList(taskList: TaskList): HTMLUListElement {
   const taskListElement: HTMLUListElement = document.createElement("ul");
 
   taskListElement.setAttribute("data-list-id", taskList.id.toString());
@@ -74,38 +129,6 @@ export function renderList(taskList: TaskList): HTMLUListElement {
 
   console.log(`Rendering task list "${taskList.name}" with ID: ${taskList.id}`);
   return taskListElement;
-}
-
-/**
- * Renders a single task within a task list.
- * @param relatedTask - The task to render.
- * @param taskListElement - The HTML element representing the parent task list.
- */
-export function renderRelatedTask(
-  relatedTask: Task,
-  taskListElement: HTMLUListElement,
-): void {
-  const entry: HTMLLIElement = document.createElement("li");
-
-  const article: HTMLElement = createElement("article", ["task"]); // Create article element with class "task"
-  {
-    const header: HTMLElement = renderHeaderOfTask(relatedTask);
-    const footer: HTMLElement = renderFooterOfTask(relatedTask);
-
-    const content: HTMLParagraphElement = createElement("p", [
-      "task__description",
-    ]) as HTMLParagraphElement;
-    content.textContent = relatedTask.description;
-
-    article.append(header, content, footer);
-  }
-
-  entry.append(article);
-
-  taskListElement.append(entry);
-  console.log(
-    `Task "${relatedTask.id}" added to list "${taskListElement.getAttribute("data-list-id")}"`,
-  );
 }
 
 function renderFooterOfTask(relatedTask: Task) {
