@@ -25,3 +25,5 @@ Extrauppgift: [Extrauppgift på objekt](https://github.com/Lexicon-Utbildning-Fr
 Dag 6: [Typer och interfaces](https://github.com/Lexicon-Utbildning-Front-end-2026/typescript-dag6-ovning)
 
 Dag 7: [DOM Grunder](https://github.com/Lexicon-Utbildning-Front-end-2026/typescript-dag7-ovning/)
+
+Dag 8: [Events & Interaktion](https://github.com/Lexicon-Utbildning-Front-end-2026/typescript-dag8-ovning)

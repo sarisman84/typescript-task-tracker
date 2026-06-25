@@ -4,11 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Task Tracker</title>
-    <script type="module" src="./dist/dag7.js"></script>
+    <script type="module" src="./dist/dag8.js"></script>
     <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
     <h1 id="title">Task Tracker</h1>
+
+    <!-- <button id="test-button">Click Me</button> -->
+    <input id="task-input" type="text" placeholder="New task" />
+
+    <select id="priority-input">
+        <option value="low">Low</option>
+        <option value="medium" selected>Medium</option>
+        <option value="high">High</option>
+    </select>
+
+    <button id="add-button">Add task</button>
     <div id="app"></div>
 
 </body>

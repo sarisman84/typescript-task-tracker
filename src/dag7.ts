@@ -1,33 +1,9 @@
-// console.log(document);
+
 
 const title = document.querySelector("#title") as HTMLHeadingElement;
 title.textContent = "Mina Tasks";
 
 const app = document.querySelector("#app");
-
-// let div = document.createElement("div");
-// div.textContent = "<h1>Hello</h1>";
-// div.innerHTML = "<h1>Hello</h1>";
-
-// app?.append(div);
-
-// createElement
-// textContent
-// append
-// DOM
-
-// const tasks = [
-//     "Träna",
-//     "Handla",
-//     "Plugga"
-// ];
-
-// for (const task of tasks) {
-//     // console.log(task);
-//     const div = document.createElement("div");
-//     div.textContent = task;
-//     app?.append(div);
-// }
 
 
 type Task = {
