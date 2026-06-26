@@ -1,4 +1,4 @@
-import { renderDefaultState } from "./render.js";
+import { renderDefaultState } from "./core/render.js";
 renderDefaultState(true);
 // Example usage
 // Generate a large set of tasks and task lists

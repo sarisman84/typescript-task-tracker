@@ -1,4 +1,4 @@
-import { renderDefaultState } from "./render.js";
+import { renderDefaultState } from "./core/render.js";
 
 renderDefaultState(true);
 

@@ -184,6 +184,34 @@ body {
   background-color: var(--background-200);
 }
 
+/* ==========================================
+   5. Default Blocks
+   Base styling for typescript generated elements.
+   ========================================== */
+
+.context-menu {
+  position: absolute;
+  display: none;
+  visibility: hidden;
+}
+
+.context-menu[data-state="open"] {
+  position: absolute;
+  display: flex;
+  visibility: visible;
+}
+
+.context-menu__button {
+}
+
+.context-menu__option-button {
+}
+
+/* ==========================================
+  6. Blocks
+   Base styling for main application layout components.
+   ========================================== */
+
 .header {
   display: flex;
   align-items: center;
@@ -262,7 +290,7 @@ body {
    6. Task Component (Card)
    Individual task card styling within a task list.
    ========================================== */
-.task {
+.card {
   display: grid;
   grid-template-columns: repeat(auto-fit, 1fr);
   gap: var(--space-unit);
@@ -279,19 +307,29 @@ body {
   width: 100%;
 }
 
-.task--empty {
+.card--empty {
   display: flex;
   justify-content: center;
   width: 100%;
 }
 
-.task__date {
+.card__header {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card__date {
   font-size: var(--font-size-xs);
   font-weight: bold;
   color: var(--text-200);
 }
 
-.task__description {
+.card__body {
+}
+
+.card__content {
   width: 100%;
 
   padding: var(--padding-content);
@@ -304,20 +342,24 @@ body {
   border-radius: var(--border-radius-card);
 }
 
-.task__description:hover {
+.card__content:hover {
   color: var(--accent-900);
 }
 
-.task__description:focus-visible {
+.card__content:focus-visible {
   color: var(--accent-900);
   background-color: var(--background-300);
   outline: none;
 }
 
-.task__footer {
+.card__footer {
   display: flex;
   width: 100%;
   justify-content: space-between;
+  align-items: center;
+}
+
+.card__context-menu {
 }
 
 /* ==========================================

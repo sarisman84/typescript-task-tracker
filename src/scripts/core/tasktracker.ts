@@ -1,6 +1,5 @@
 import {
   type TaskList,
-  type Status,
   type Task,
   taskLists,
   tasks,
@@ -17,7 +16,7 @@ export interface DeleteTaskListDesc {
 
 export interface CreateTaskDesc {
   description: string;
-  status: Status;
+  // status: Status;
   listId: number;
 }
 
@@ -26,10 +25,6 @@ export interface DeleteTaskDesc {
   updateRender: boolean;
 }
 
-export interface UpdateTaskStatusDesc {
-  taskId: number;
-  newStatus: Status;
-}
 
 let incrementedListId: number = 0;
 let incrementedTaskId: number = 0;
@@ -89,7 +84,7 @@ export function createTask(description: CreateTaskDesc): void {
     listId: description.listId,
     id: ++incrementedTaskId,
     description: description.description,
-    status: description.status,
+    tags: [],
     createdAt: new Date(),
     editFlag: false,
   };
@@ -116,12 +111,12 @@ export function deleteTask(description: DeleteTaskDesc): void {
   console.log(`Task ${description.taskId} deleted successfully`);
 }
 
-export function updateTaskStatus(description: UpdateTaskStatusDesc): void {
-  const task: Task | undefined = tasks.find((t) => t.id === description.taskId);
-  if (task === undefined) {
-    console.error(`Task with ID ${description.taskId} not found`);
-    return;
-  }
-  task.status = description.newStatus;
-  renderTasks();
-}
+// export function updateTaskStatus(description: UpdateTaskStatusDesc): void {
+//   const task: Task | undefined = tasks.find((t) => t.id === description.taskId);
+//   if (task === undefined) {
+//     console.error(`Task with ID ${description.taskId} not found`);
+//     return;
+//   }
+//   task.status = description.newStatus;
+//   renderTasks();
+// }

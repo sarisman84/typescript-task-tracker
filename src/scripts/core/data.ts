@@ -1,7 +1,20 @@
 /**
  * Represents the status of a task.
  */
-export type Status = "pending" | "in-progress" | "completed";
+export type Tag = {
+  name: string;
+  color:
+    | "red"
+    | "blue"
+    | "green"
+    | "yellow"
+    | "purple"
+    | "orange"
+    | "pink"
+    | "gray"
+    | "black"
+    | "white";
+};
 
 /**
  * Represents a single task.
@@ -10,7 +23,7 @@ export type Task = {
   listId: number;
   id: number;
   description: string;
-  status: Status;
+  tags: Tag[];
   createdAt: Date;
   editFlag: boolean;
 };
