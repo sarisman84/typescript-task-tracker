@@ -10,16 +10,20 @@
 <body>
     <h1 id="title">Task Tracker</h1>
 
-    <!-- <button id="test-button">Click Me</button> -->
-    <input id="task-input" type="text" placeholder="New task" />
+    <form id="task-form">
+        <input id="task-input" type="text"  placeholder="New task" />
 
-    <select id="priority-input">
-        <option value="low">Low</option>
-        <option value="medium" selected>Medium</option>
-        <option value="high">High</option>
-    </select>
+        <select id="priority-input">
+            <option value="low">Low</option>
+            <option value="medium" selected>Medium</option>
+            <option value="high">High</option>
+        </select>
 
-    <button id="add-button">Add task</button>
+        <button type="submit">Add Task</button>
+    </form>
+
+    <p id="error-message"></p>
+
     <div id="app"></div>
 
 </body>

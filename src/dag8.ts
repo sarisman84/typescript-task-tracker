@@ -7,52 +7,105 @@ const app = document.querySelector("#app");
 
 let nextId = 1;
 
-// const testButton = document.querySelector("#test-button") as HTMLButtonElement;
-
-// function handleClick(event: MouseEvent): void {
-//     const button = event.target as HTMLButtonElement;
-
-//     console.log(button.textContent);
-// }
-
-// testButton.addEventListener("click", handleClick);
 
 const taskInput = document.querySelector("#task-input") as HTMLInputElement;
-const addButton = document.querySelector("#add-button") as HTMLButtonElement;
+//const addButton = document.querySelector("#add-button") as HTMLButtonElement;
 const priorityInput = document.querySelector("#priority-input") as HTMLSelectElement;
 // const completeButton = document.querySelector(".compButton") as HTMLButtonElement;
 
+const form = document.querySelector("#task-form") as HTMLFormElement;
 
-addButton.addEventListener("click", () => {
-    const taskName = taskInput.value.trim();
+const errorMessage = document.querySelector("#error-message") as HTMLParagraphElement;
 
-    if (taskName === "") {
-        console.log("Task name is required.");
-        return;
-    }
-    const priority = priorityInput.value as TaskPriority;
 
-    addTask(taskName, priority);
-})
+// addButton.addEventListener("click", () => {
+//     const taskName = taskInput.value.trim();
+
+//     if (taskName === "") {
+//         console.log("Task name is required.");
+//         return;
+//     }
+//     const priority = priorityInput.value as TaskPriority;
+
+//     addTask(taskName, priority);
+// })
 
 // completeButton.addEventListener("click", () => {
 //     // completeTask(task);
 // })
 
 
+form.addEventListener("submit", handleSubmit);
+
+
+function handleSubmit(event: SubmitEvent): void {
+    event.preventDefault();
+
+    const taskName = taskInput.value.trim();
+    const priority = priorityInput.value as TaskPriority;
+
+    const error = validateTaskName(taskName);
+
+    if (error !== "") {
+        errorMessage.textContent = error;
+        return;
+    }
+
+    errorMessage.textContent = "";
+
+    addTask(taskName, priority);
+    renderTasks();
+}
+
+
+function validateTaskName(name: string): string {
+    if (name === "") return "Task name is required"
+
+    if (name.length < 3) {
+        return "Task name must be at least 3 characters."
+    }
+
+    if (name.length > 40) {
+        return "Task name cannot be longer than 40 characters."   
+    }
+
+    if (taskExists(name)) {
+        return "Task name with that name already exists."
+    }
+
+    return "";
+}
+
+
+function taskExists(name: string): boolean {
+    for (const task of tasks) {
+        if (task.name.toLowerCase() === name.toLowerCase()) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+
+function clearForm(): void {
+    taskInput.value = "";
+    priorityInput.value = "medium";
+}
+
+
 function addTask(name: string, priority: TaskPriority): void {
     const newTask: Task = {
         id: nextId,
-        name: name,
+        name,
         status: "pending",
         priority
     };
 
     tasks.push(newTask);
     nextId++;
-    renderTasks();
-    console.log(tasks)
-    taskInput.value = "";
+    
+    clearForm();
 }
 
 
@@ -85,18 +138,6 @@ type Task = {
 
 type TaskPriority = "low" | "medium" | "high";
 
-// let tasks: Task[] = [
-//     {
-//         name: "Träna",
-//         status: "pending",
-//         priority: "high"
-//     },
-//     {
-//         name: "Handla",
-//         status: "pending",
-//         priority: "low"
-//     }
-// ];
 
 let tasks: Task[] = [];
 
