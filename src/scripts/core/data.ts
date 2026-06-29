@@ -1,3 +1,5 @@
+import stringUtils from "../utility/string-utils.js";
+
 /**
  * Represents the status of a task.
  */
@@ -16,12 +18,28 @@ export type Tag = {
     | "white";
 };
 
+export type UUID = string;
+export const UUID = {
+  empty: "00000000-0000-0000-0000-000000000000",
+  isValid(uuid: string): boolean {
+    return (
+      uuid.length === 36 &&
+      !stringUtils.isStringNullOrEmpty(uuid) &&
+      !uuid.match(this.empty)
+    );
+  },
+
+  new(): UUID {
+    return crypto.randomUUID(); // TODO: Use a proper UUID generator library like 'uuid' or 'nanoid' instead of crypto.randomUUID() for better compatibility and performance. 
+  },
+};
+
 /**
  * Represents a single task.
  */
 export type Task = {
-  listId: number;
-  id: number;
+  listId: string;
+  id: UUID;
   description: string;
   tags: Tag[];
   createdAt: Date;
@@ -32,7 +50,7 @@ export type Task = {
  * Represents a task list.
  */
 export type TaskList = {
-  id: number;
+  id: UUID;
   name: string;
   createdAt: Date;
 };

@@ -24,12 +24,18 @@ export function drawTaskCard(task) {
     //Create card body and its related elements
     const body = htmlUtils.createElement("div", ["card__body"]);
     {
+        const label = htmlUtils.createElement("label", [
+            "sc-only",
+        ]);
+        label.id = "task-card__label";
+        label.textContent = "Description";
         const textArea = htmlUtils.createElement("textarea", [
             "task-card__content",
         ]);
         textArea.id = "card__content";
         textArea.textContent = description;
-        body.append(textArea);
+        label.setAttribute("for", "card__content");
+        body.append(label, textArea);
     }
     // Create card footer and its related elements.
     const footer = htmlUtils.createElement("footer", [

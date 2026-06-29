@@ -1,39 +1,35 @@
 import { taskLists, tasks, } from "./data.js";
-import { renderTasks } from "./render.js";
-let incrementedListId = 0;
-let incrementedTaskId = 0;
+import { renderApp } from "./render.js";
 /**
  * Creates a new task list with the specified name.
  * @param name - The name of the task list to create.
  */
-export function createTaskList(description) {
+export function createTaskList() {
     const taskList = {
-        id: ++incrementedListId,
-        name: description.name,
+        id: crypto.randomUUID(),
+        name: "",
         createdAt: new Date(),
     };
     taskLists.push(taskList);
     console.log(`Task list "${taskList.name}" created with ID: ${taskList.id}`);
-    renderTasks();
+    renderApp();
     return taskList;
 }
-export function deleteTaskList(description) {
-    const foundIndex = taskLists.findIndex((list) => list.id === description.listId);
+export function deleteTaskList(listId, updateRender = true) {
+    const foundIndex = taskLists.findIndex((list) => list.id === listId);
     if (foundIndex === -1) {
         return;
     }
     const deletedListItems = tasks
-        .filter((task) => task.listId === description.listId)
+        .filter((task) => task.listId === listId)
         .map((task) => task.id);
     deletedListItems.forEach((id) => {
-        const deleteDesc = {
-            taskId: id,
-            updateRender: false,
-        };
-        deleteTask(deleteDesc);
+        deleteTask(id, false);
     });
     taskLists.splice(foundIndex, 1); // Remove the task from the array
-    renderTasks();
+    if (updateRender) {
+        renderApp();
+    }
 }
 /**
  * Creates a new task with the specified details.
@@ -42,29 +38,29 @@ export function deleteTaskList(description) {
  * @param listId - The ID of the list this task belongs to (default is 0).
  * @param status - The status of the task (default is "pending").
  */
-export function createTask(description) {
+export function createTask(listId) {
     const task = {
-        listId: description.listId,
-        id: ++incrementedTaskId,
-        description: description.description,
+        listId: listId,
+        id: crypto.randomUUID(),
+        description: "",
         tags: [],
         createdAt: new Date(),
         editFlag: false,
     };
     tasks.push(task);
     console.log(`Task "${task.id}" created with ID: ${task.id} in list ID: ${task.listId}`);
-    renderTasks();
+    renderApp();
 }
-export function deleteTask(description) {
-    const foundIndex = tasks.findIndex((task) => task.id === description.taskId);
+export function deleteTask(taskId, updateRender = true) {
+    const foundIndex = tasks.findIndex((task) => task.id === taskId);
     if (foundIndex === -1) {
         return;
     }
     tasks.splice(foundIndex, 1); // Remove the task from the array
-    if (description.updateRender) {
-        renderTasks(); // Re-render the ap
+    if (updateRender) {
+        renderApp(); // Re-render the ap
     }
-    console.log(`Task ${description.taskId} deleted successfully`);
+    console.log(`Task ${taskId} deleted successfully`);
 }
 // export function updateTaskStatus(description: UpdateTaskStatusDesc): void {
 //   const task: Task | undefined = tasks.find((t) => t.id === description.taskId);

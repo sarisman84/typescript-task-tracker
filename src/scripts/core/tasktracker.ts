@@ -3,73 +3,51 @@ import {
   type Task,
   taskLists,
   tasks,
+  type UUID,
 } from "./data.js";
-import { renderTasks } from "./render.js";
+import { renderApp } from "./render.js";
 
-export interface CreateTaskListDesc {
-  name: string;
-}
-
-export interface DeleteTaskListDesc {
-  listId: number;
-}
-
-export interface CreateTaskDesc {
-  description: string;
-  // status: Status;
-  listId: number;
-}
-
-export interface DeleteTaskDesc {
-  taskId: number;
-  updateRender: boolean;
-}
-
-
-let incrementedListId: number = 0;
-let incrementedTaskId: number = 0;
 
 /**
  * Creates a new task list with the specified name.
  * @param name - The name of the task list to create.
  */
-export function createTaskList(description: CreateTaskListDesc): TaskList {
+export function createTaskList(): TaskList {
   const taskList: TaskList = {
-    id: ++incrementedListId,
-    name: description.name,
+    id: crypto.randomUUID(),
+    name: "",
     createdAt: new Date(),
   };
   taskLists.push(taskList);
   console.log(`Task list "${taskList.name}" created with ID: ${taskList.id}`);
 
-  renderTasks();
+  renderApp();
 
   return taskList;
 }
 
-export function deleteTaskList(description: DeleteTaskListDesc): void {
-  const foundIndex = taskLists.findIndex(
-    (list) => list.id === description.listId,
-  );
+export function deleteTaskList(
+  listId: string,
+  updateRender: boolean = true,
+): void {
+  const foundIndex = taskLists.findIndex((list) => list.id === listId);
 
   if (foundIndex === -1) {
     return;
   }
 
-  const deletedListItems: number[] = tasks
-    .filter((task) => task.listId === description.listId)
+  const deletedListItems: UUID[] = tasks
+    .filter((task) => task.listId === listId)
     .map((task) => task.id);
 
   deletedListItems.forEach((id) => {
-    const deleteDesc: DeleteTaskDesc = {
-      taskId: id,
-      updateRender: false,
-    };
-    deleteTask(deleteDesc);
+    deleteTask(id, false);
   });
 
   taskLists.splice(foundIndex, 1); // Remove the task from the array
-  renderTasks();
+  if (updateRender) {
+    renderApp();
+  }
 }
 
 /**
@@ -79,11 +57,11 @@ export function deleteTaskList(description: DeleteTaskListDesc): void {
  * @param listId - The ID of the list this task belongs to (default is 0).
  * @param status - The status of the task (default is "pending").
  */
-export function createTask(description: CreateTaskDesc): void {
+export function createTask(listId: UUID): void {
   const task: Task = {
-    listId: description.listId,
-    id: ++incrementedTaskId,
-    description: description.description,
+    listId: listId,
+    id: crypto.randomUUID(),
+    description: "",
     tags: [],
     createdAt: new Date(),
     editFlag: false,
@@ -94,21 +72,21 @@ export function createTask(description: CreateTaskDesc): void {
     `Task "${task.id}" created with ID: ${task.id} in list ID: ${task.listId}`,
   );
 
-  renderTasks();
+  renderApp();
 }
 
-export function deleteTask(description: DeleteTaskDesc): void {
-  const foundIndex = tasks.findIndex((task) => task.id === description.taskId);
+export function deleteTask(taskId: UUID, updateRender: boolean = true): void {
+  const foundIndex = tasks.findIndex((task) => task.id === taskId);
   if (foundIndex === -1) {
     return;
   }
 
   tasks.splice(foundIndex, 1); // Remove the task from the array
-  if (description.updateRender) {
-    renderTasks(); // Re-render the ap
+  if (updateRender) {
+    renderApp(); // Re-render the ap
   }
 
-  console.log(`Task ${description.taskId} deleted successfully`);
+  console.log(`Task ${taskId} deleted successfully`);
 }
 
 // export function updateTaskStatus(description: UpdateTaskStatusDesc): void {
