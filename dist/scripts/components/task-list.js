@@ -60,7 +60,7 @@ function drawTitleForms(list) {
         ]);
         titleInput.type = "text";
         titleInput.id = titleInput.name = "list-name";
-        titleInput.textContent = list.name;
+        titleInput.value = list.name;
         titleInput.placeholder = "New List";
         titleForms.addEventListener("submit", (event) => {
             event.preventDefault();
@@ -70,7 +70,7 @@ function drawTitleForms(list) {
             }
             list.name = titleInput.value;
             renderApp();
-            console.log(`[Log][List/${list.id}]: Name Updated`);
+            console.log(`[Log][List/${list.id}]: Name Updated to ${list.name}`);
         });
         titleForms.append(label, titleInput);
     }

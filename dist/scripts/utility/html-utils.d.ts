@@ -14,6 +14,8 @@ export declare const htmlUtils: {
      * @returns The newly created HTMLElement, cast to the specified type T.
      */
     createElement<T extends HTMLElement>(type: HTMLTag, classList?: string[]): T;
+    createForm(classList?: string[]): HTMLElement;
+    createInput(classList?: string[]): HTMLInputElement;
     /**
      * Creates a dropdown (select) element with the given options and change handler.
      *

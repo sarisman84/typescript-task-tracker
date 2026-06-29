@@ -20,6 +20,62 @@ export function drawTaskCard(task: Task): HTMLFormElement {
   card.id = card.name = `card_${id}`;
 
   // Create card header and its related elements.
+  const header: HTMLElement = drawTaskCardHeader(createdAt);
+
+  //Create card body and its related elements
+  const body: HTMLElement = drawTaskCardBody(description);
+
+  // Create card footer and its related elements.
+  const footer: HTMLElement = drawTaskCardFooter(tags);
+
+  card.append(header, body, footer);
+  return card;
+}
+
+function drawTaskCardFooter(tags: Tag[]) {
+  const footer: HTMLElement = htmlUtils.createElement("footer", [
+    "card__footer",
+  ]);
+  {
+    const tagElements = tags.map((tag: Tag, index: number) => {
+      const element: HTMLSpanElement = htmlUtils.createElement("span", [
+        "card__tag",
+      ]);
+      element.id = `card__tag-${index}`; // Use index as ID for simplicity
+      element.textContent = tag.name;
+      element.setAttribute("data-tag-color", tag.color);
+      return element;
+    });
+
+    footer.append(...tagElements);
+  }
+  return footer;
+}
+
+function drawTaskCardBody(description: string) {
+  const body: HTMLElement = htmlUtils.createElement("div", ["card__body"]);
+  {
+    const label: HTMLLabelElement = htmlUtils.createElement("label", [
+      "sc-only",
+    ]);
+    label.id = "task-card__label";
+    label.textContent = "Description";
+
+    const textArea: HTMLTextAreaElement = htmlUtils.createElement("textarea", [
+      "task-card__content",
+    ]);
+
+    textArea.id = "card__content";
+    textArea.textContent = description;
+
+    label.setAttribute("for", "card__content");
+
+    body.append(label, textArea);
+  }
+  return body;
+}
+
+function drawTaskCardHeader(createdAt: Date) {
   const header: HTMLElement = htmlUtils.createElement("header", [
     "card__header",
   ]);
@@ -43,46 +99,5 @@ export function drawTaskCard(task: Task): HTMLFormElement {
 
     header.append(dateElement, contextMenu);
   }
-
-  //Create card body and its related elements
-  const body: HTMLElement = htmlUtils.createElement("div", ["card__body"]);
-  {
-    const label: HTMLLabelElement = htmlUtils.createElement("label", [
-      "sc-only",
-    ]);
-    label.id = "task-card__label";
-    label.textContent = "Description";
-
-    const textArea: HTMLTextAreaElement = htmlUtils.createElement("textarea", [
-      "task-card__content",
-    ]);
-
-    textArea.id = "card__content";
-    textArea.textContent = description;
-
-    label.setAttribute("for", "card__content");
-
-    body.append(label, textArea);
-  }
-
-  // Create card footer and its related elements.
-  const footer: HTMLElement = htmlUtils.createElement("footer", [
-    "card__footer",
-  ]);
-  {
-    const tagElements = tags.map((tag: Tag, index: number) => {
-      const element: HTMLSpanElement = htmlUtils.createElement("span", [
-        "card__tag",
-      ]);
-      element.id = `card__tag-${index}`; // Use index as ID for simplicity
-      element.textContent = tag.name;
-      element.setAttribute("data-tag-color", tag.color);
-      return element;
-    });
-
-    footer.append(...tagElements);
-  }
-
-  card.append(header, body, footer);
-  return card;
+  return header;
 }

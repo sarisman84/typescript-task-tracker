@@ -29,6 +29,14 @@ export const htmlUtils = {
     return element;
   },
 
+  createForm(classList: string[] = []): HTMLElement {
+    return this.createElement("form", classList);
+  },
+
+  createInput(classList: string[] = []): HTMLInputElement {
+    return this.createElement("input", classList);
+  },
+
   /**
    * Creates a dropdown (select) element with the given options and change handler.
    *
