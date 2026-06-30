@@ -1,4 +1,4 @@
-import { UUID, tasks, type Tag } from "../data.js";
+import { UUID, tasks, type Color, type Tag } from "../data.js";
 import { renderApp } from "../render.js";
 
 export {};
@@ -48,8 +48,51 @@ export function deleteTask(taskId: UUID, updateRender: boolean = true): void {
 
   tasks.splice(foundIndex, 1); // Remove the task from the array
   if (updateRender) {
-    renderApp(); // Re-render the ap
+    renderApp(); // Re-render the app
   }
 
   console.log(`Task ${taskId} deleted successfully`);
+}
+
+export interface AddTagDesc {
+  taskId: UUID;
+  value: string;
+  color: Color;
+  updateRender?: boolean; // Optional parameter with default value of true
+}
+
+export function addTagToTask(desc: AddTagDesc): void {
+  const task = tasks.find((t) => t.id === desc.taskId);
+  if (!task) {
+    return;
+  }
+
+  const tag: Tag = { name: desc.value, color: desc.color, id: UUID.new() };
+  task.tags.push(tag);
+
+  if (desc.updateRender) {
+    renderApp(); // Re-render the app
+  }
+}
+
+export function removeTagFromTask(
+  taskId: UUID,
+  tagId: UUID,
+  updateRender: boolean = true,
+): void {
+  const task = tasks.find((t) => t.id === taskId);
+  if (!task) {
+    return;
+  }
+
+  const index = task.tags.findIndex((tag) => tag.id === tagId);
+  if (index === -1) {
+    return;
+  }
+
+  task.tags.splice(index, 1);
+
+  if (updateRender) {
+    renderApp(); // Re-render the app
+  }
 }

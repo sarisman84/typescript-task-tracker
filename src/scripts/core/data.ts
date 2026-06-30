@@ -2,22 +2,28 @@ import stringUtils from "../utility/string-utils.js";
 import type { TaskList } from "./data management/list-data.js";
 import type { Task } from "./data management/task-data.js";
 
+export {};
+
 /**
  * Represents the status of a task.
  */
+
+export type Color =
+  | "red"
+  | "blue"
+  | "green"
+  | "yellow"
+  | "purple"
+  | "orange"
+  | "pink"
+  | "gray"
+  | "black"
+  | "white";
+
 export type Tag = {
   name: string;
-  color:
-    | "red"
-    | "blue"
-    | "green"
-    | "yellow"
-    | "purple"
-    | "orange"
-    | "pink"
-    | "gray"
-    | "black"
-    | "white";
+  color: Color;
+  id: UUID;
 };
 
 export type UUID = string;
