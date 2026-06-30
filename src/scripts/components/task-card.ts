@@ -4,8 +4,14 @@
  * Provides functions to construct DOM elements representing a task with its
  * header (date), body (description/content), and footer (tags).
  */
-import { deleteTask, type Task } from "../core/data management/task-data.js";
+import {
+  addTagToTask,
+  deleteTask,
+  type AddTagDesc,
+  type Task,
+} from "../core/data management/task-data.js";
 import type { Tag } from "../core/data.js";
+import { renderApp } from "../core/render.js";
 import { htmlUtils } from "../utility/html/html-utils.js";
 import stringUtils from "../utility/string-utils.js";
 
@@ -31,10 +37,14 @@ export type DrawTaskCardDesc = {
  * @returns A form element representing the task card.
  */
 export function drawTaskCard(task: Task): HTMLFormElement {
-  const { description, createdAt, tags, id } = task;
+  const { id } = task;
 
   const card: HTMLFormElement = htmlUtils.createElement("form", ["card"]);
   card.id = card.name = `card_${id}`;
+  card.events.onSubmit((event) => {
+    event.preventDefault();
+    renderApp();
+  });
 
   // Create card header and its related elements.
   const header: HTMLElement = drawTaskCardHeader(task);
@@ -74,14 +84,22 @@ function drawTaskCardFooter(task: Task) {
     });
 
     const createTagButton = htmlUtils.createElement("button", [
-      "card__tag--create-button",
+      "u-button",
+      "u-button--create",
     ]);
     createTagButton.id = "card__tag--create-button";
+    createTagButton.textContent = "+";
     createTagButton.events.onClick((event: PointerEvent) => {
-      // addTagToTask({"": "yellow"}, task.id);
+      const desc: AddTagDesc = {
+        task,
+        value: "Temp",
+        color: "pink",
+      };
+
+      addTagToTask(desc);
     });
 
-    footer.append(...tagElements);
+    footer.append(...tagElements, createTagButton);
   }
   return footer;
 }
@@ -128,6 +146,10 @@ function drawTaskCardBody(task: Task) {
       task.description = textArea.value;
       textArea.blur();
     });
+
+    body.events.onMouseLeave(() => {
+      task.description = textArea.value;
+    });
   }
   return body;
 }
@@ -161,9 +183,6 @@ function drawTaskCardHeader(task: Task) {
     deleteButton.textContent = "Delete";
     deleteButton.id = "card__delete-button";
 
-    // deleteButton.addEventListener("click", () => {
-    //   deleteTask(task.id);
-    // });
     deleteButton.events.onClick(() => {
       deleteTask(task.id);
     });

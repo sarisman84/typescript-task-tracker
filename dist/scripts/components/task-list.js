@@ -63,16 +63,22 @@ function drawTitleForms(list) {
         titleInput.placeholder = "New List";
         titleForms.events.onSubmit((event) => {
             event.preventDefault();
-            const trueValue = titleInput.value.trim();
-            if (stringUtils.isStringNullOrEmpty(trueValue)) {
-                return;
-            }
-            list.name = titleInput.value;
-            renderApp();
-            console.log(`[Log][List/${list.id}]: Name Updated to ${list.name}`);
+            updateListName(titleInput, list);
+        });
+        titleForms.events.onMouseLeave(() => {
+            updateListName(titleInput, list);
         });
         titleForms.append(label, titleInput);
     }
     return titleForms;
+}
+function updateListName(titleInput, list) {
+    const trueValue = titleInput.value.trim();
+    if (stringUtils.isStringNullOrEmpty(trueValue)) {
+        return;
+    }
+    list.name = titleInput.value;
+    renderApp();
+    console.log(`[Log][List/${list.id}]: Name Updated to ${list.name}`);
 }
 //# sourceMappingURL=task-list.js.map

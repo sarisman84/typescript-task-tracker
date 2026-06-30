@@ -2,6 +2,10 @@ import type { HTMLTag } from "./html-tag.js";
 import type { HTMLContextMenuOption } from "./custom types/html-context-menu.js";
 export {};
 type AddEventListener<K extends keyof HTMLElementEventMap> = (callback: (event: HTMLElementEventMap[K]) => void) => void;
+type Vector2 = {
+    x: number;
+    y: number;
+};
 declare global {
     interface HTMLElement {
         events: {
@@ -43,6 +47,7 @@ declare global {
             onTouchMove: AddEventListener<"touchmove">;
             onTouchCancel: AddEventListener<"touchcancel">;
         };
+        position: Vector2;
     }
 }
 export declare const htmlUtils: {

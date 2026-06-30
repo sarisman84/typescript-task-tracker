@@ -33,21 +33,14 @@ export function deleteTask(taskId, updateRender = true) {
     console.log(`Task ${taskId} deleted successfully`);
 }
 export function addTagToTask(desc) {
-    const task = tasks.find((t) => t.id === desc.taskId);
-    if (!task) {
-        return;
-    }
     const tag = { name: desc.value, color: desc.color, id: UUID.new() };
-    task.tags.push(tag);
+    desc.task.tags.push(tag);
     if (desc.updateRender) {
         renderApp(); // Re-render the app
     }
+    console.log(`[Log][Task/${desc.task.id}]: Added tag ${tag.id}/${tag.name}!`);
 }
-export function removeTagFromTask(taskId, tagId, updateRender = true) {
-    const task = tasks.find((t) => t.id === taskId);
-    if (!task) {
-        return;
-    }
+export function removeTagFromTask(task, tagId, updateRender = true) {
     const index = task.tags.findIndex((tag) => tag.id === tagId);
     if (index === -1) {
         return;
@@ -56,5 +49,6 @@ export function removeTagFromTask(taskId, tagId, updateRender = true) {
     if (updateRender) {
         renderApp(); // Re-render the app
     }
+    console.log(`[Log][Task/${task.id}]: Removed tag ${tagId}!`);
 }
 //# sourceMappingURL=task-data.js.map

@@ -200,15 +200,34 @@ body {
 }
 
 .context-menu {
-  position: absolute;
-  display: none;
+  position: fixed;
+  visibility: visible;
+
+  min-width: 75px;
+  max-width: 200px;
+  box-shadow: 0 0 0.5em oklab(0% 0 0 / 0.1);
+  border-radius: 0.3em;
+
+  background-color: white;
+  font-size: 16px;
+}
+
+.context-menu[data-state="close"] {
   visibility: hidden;
 }
 
-.context-menu[data-state="open"] {
-  position: absolute;
-  display: flex;
-  visibility: visible;
+.context-menu__link {
+  width: 100%;
+  padding: 0.3em;
+
+  list-style-type: none;
+  font-size: 1em;
+  font-family: "Inter", sans-serif;
+  cursor: pointer;
+}
+
+.context-menu__link:hover {
+  background-color: oklab(94.91199999999999% 0 -0.00011);
 }
 
 /* .context-menu__button {
@@ -367,9 +386,62 @@ body {
 
 .card__footer {
   display: flex;
+  flex-wrap: wrap;
   width: 100%;
-  justify-content: space-between;
+  justify-content: start;
   align-items: center;
+
+  gap: 0.25em;
+}
+
+.card__tag {
+  font-size: 0.75em;
+
+  background-color: oklab(45.678000000000004% 0 -0.00005);
+
+  padding-inline: 0.75em;
+  padding-block: 0.1em;
+
+  border-radius: 0.25em;
+  text-transform: capitalize;
+
+  color: var(--text-900);
+}
+
+.card__tag[data-tag-color="red"] {
+  background-color: oklab(51.902% 0.18588 0.10399);
+  color: var(--text-50);
+}
+.card__tag[data-tag-color="blue"] {
+  background-color: oklab(42.415000000000006% -0.02551 -0.23905);
+}
+.card__tag[data-tag-color="green"] {
+  background-color: oklab(68.135% -0.18177 0.13639);
+  color: var(--text-50);
+}
+.card__tag[data-tag-color="yellow"] {
+  background-color: oklab(83.16900000000001% -0.04302 0.11899);
+  color: var(--text-50);
+}
+.card__tag[data-tag-color="purple"] {
+  background-color: oklab(32.574% 0.13116 -0.06219);
+}
+.card__tag[data-tag-color="orange"] {
+  background-color: oklab(61.97200000000001% 0.11158 0.12516);
+}
+.card__tag[data-tag-color="pink"] {
+  background-color: oklab(74.263% 0.02658 -0.01695);
+  color: var(--text-50);
+}
+.card__tag[data-tag-color="gray"] {
+  background-color: oklab(38.666% 0 -0.00004);
+}
+.card__tag[data-tag-color="black"] {
+  background-color: oklab(17.304% 0 -0.00002);
+}
+.card__tag[data-tag-color="white"] {
+  background-color: oklab(91.583% 0 -0.0001);
+  color: var(--text-50);
 }
 
 /* .card__context-menu {
@@ -380,7 +452,7 @@ body {
    Color-coded status indicators using data attributes.
    Supports three states: pending, completed, in-progress.
    ========================================== */
-.task__status {
+/* .task__status {
   padding: var(--ch-unit);
   border-radius: var(--ch-unit);
   text-transform: capitalize;
@@ -388,7 +460,7 @@ body {
 }
 
 /* Pending status - uses primary color palette */
-.task__status[data-type="pending"] {
+/* .task__status[data-type="pending"] {
   background-color: var(--color-status-pending);
   color: var(--text-900);
 }
@@ -405,7 +477,7 @@ body {
 }
 
 /* Completed status - uses secondary color palette */
-.task__status[data-type="completed"] {
+/* .task__status[data-type="completed"] {
   background-color: var(--color-status-completed);
 }
 
@@ -421,7 +493,7 @@ body {
 }
 
 /* In-progress status - uses accent color palette */
-.task__status[data-type="in-progress"] {
+/*.task__status[data-type="in-progress"] {
   color: var(--text-900);
   background-color: var(--color-status-in-progress);
 }
@@ -435,4 +507,4 @@ body {
   background-color: var(--color-status-in-progress--focus-visible);
   color: var(--text-900);
   outline: none;
-}
+} */

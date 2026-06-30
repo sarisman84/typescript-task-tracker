@@ -55,36 +55,28 @@ export function deleteTask(taskId: UUID, updateRender: boolean = true): void {
 }
 
 export interface AddTagDesc {
-  taskId: UUID;
+  task: Task;
   value: string;
   color: Color;
   updateRender?: boolean; // Optional parameter with default value of true
 }
 
 export function addTagToTask(desc: AddTagDesc): void {
-  const task = tasks.find((t) => t.id === desc.taskId);
-  if (!task) {
-    return;
-  }
-
   const tag: Tag = { name: desc.value, color: desc.color, id: UUID.new() };
-  task.tags.push(tag);
+  desc.task.tags.push(tag);
 
   if (desc.updateRender) {
     renderApp(); // Re-render the app
   }
+
+  console.log(`[Log][Task/${desc.task.id}]: Added tag ${tag.id}/${tag.name}!`);
 }
 
 export function removeTagFromTask(
-  taskId: UUID,
+  task: Task,
   tagId: UUID,
   updateRender: boolean = true,
 ): void {
-  const task = tasks.find((t) => t.id === taskId);
-  if (!task) {
-    return;
-  }
-
   const index = task.tags.findIndex((tag) => tag.id === tagId);
   if (index === -1) {
     return;
@@ -95,4 +87,6 @@ export function removeTagFromTask(
   if (updateRender) {
     renderApp(); // Re-render the app
   }
+
+  console.log(`[Log][Task/${task.id}]: Removed tag ${tagId}!`);
 }

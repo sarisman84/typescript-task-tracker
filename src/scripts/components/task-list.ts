@@ -73,17 +73,24 @@ function drawTitleForms(list: TaskList): HTMLFormElement {
 
     titleForms.events.onSubmit((event: Event) => {
       event.preventDefault();
+      updateListName(titleInput, list);
+    });
 
-      const trueValue: string = titleInput.value.trim();
-      if (stringUtils.isStringNullOrEmpty(trueValue)) {
-        return;
-      }
-      list.name = titleInput.value;
-      renderApp();
-      console.log(`[Log][List/${list.id}]: Name Updated to ${list.name}`);
+    titleForms.events.onMouseLeave(() => {
+      updateListName(titleInput, list);
     });
 
     titleForms.append(label, titleInput);
   }
   return titleForms;
+}
+
+function updateListName(titleInput: HTMLInputElement, list: TaskList) {
+  const trueValue: string = titleInput.value.trim();
+  if (stringUtils.isStringNullOrEmpty(trueValue)) {
+    return;
+  }
+  list.name = titleInput.value;
+  renderApp();
+  console.log(`[Log][List/${list.id}]: Name Updated to ${list.name}`);
 }
