@@ -1,4 +1,5 @@
 import stringUtils from "../utility/string-utils.js";
+import type { TaskList } from "./data management/list-data.js";
 import type { Task } from "./data management/task-data.js";
 
 /**
@@ -31,13 +32,9 @@ export const UUID = {
   },
 
   new(): UUID {
-    return crypto.randomUUID(); // TODO: Use a proper UUID generator library like 'uuid' or 'nanoid' instead of crypto.randomUUID() for better compatibility and performance. 
+    return crypto.randomUUID(); // TODO: Use a proper UUID generator library like 'uuid' or 'nanoid' instead of crypto.randomUUID() for better compatibility and performance.
   },
 };
-
-
-
-
 
 /**
  * Type for HTML elements that may be null.

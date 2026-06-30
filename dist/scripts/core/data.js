@@ -7,7 +7,7 @@ export const UUID = {
             !uuid.match(this.empty));
     },
     new() {
-        return crypto.randomUUID(); // TODO: Use a proper UUID generator library like 'uuid' or 'nanoid' instead of crypto.randomUUID() for better compatibility and performance. 
+        return crypto.randomUUID(); // TODO: Use a proper UUID generator library like 'uuid' or 'nanoid' instead of crypto.randomUUID() for better compatibility and performance.
     },
 };
 /**

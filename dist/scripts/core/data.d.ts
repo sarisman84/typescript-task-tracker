@@ -1,3 +1,4 @@
+import type { TaskList } from "./data management/list-data.js";
 import type { Task } from "./data management/task-data.js";
 /**
  * Represents the status of a task.
