@@ -1,129 +1,93 @@
 import { app, UUID } from "../core/data.js";
+import { renderApp } from "../core/render.js";
 import { htmlUtils } from "../utility/html/html-utils.js";
 export {};
-let contextMenu = undefined;
 /**
- * Draws a context menu with the specified options.
- * Initializes the context menu if it hasn't been created yet, clears any existing items,
- * and populates it with links based on the provided options.
- *
- * @param options - Array of context menu option objects containing labels and click event handlers.
- * @returns The ContextMenu object containing the menu's id and element reference.
+ * Namespace for managing context menus.
  */
-export function drawContextMenu(options, openState = true) {
-    if (!contextMenu) {
-        contextMenu = initializeContextMenu();
-    }
-    clearMenu(true);
-    const { element } = contextMenu;
-    options.forEach((entry) => {
-        const listEntry = htmlUtils.createElement("li", [
-            "context-menu__link",
-        ]);
-        listEntry.events.onClick(() => {
-            if (!entry.event()) {
-                closeMenu();
-            }
-        });
-        const link = htmlUtils.createElement("span", [
-            "context-menu__label",
-        ]);
-        link.textContent = entry.label;
-        listEntry.append(link);
-        element.append(listEntry);
-    });
-    if (openState) {
-        openMenu();
-    }
-    console.log(`[Log][ContextMenu]: Drawn [${options.length} options`);
-    return contextMenu;
-}
+export const ContextMenu = {
+    /**
+     * Opens a context menu with the specified content and position.
+     *
+     * @param content - The content to display in the menu, either an array of options or a custom HTMLElement.
+     * @param position - The position where the menu should be displayed, as coordinates or an HTMLElement (uses its bounding rect).
+     * @param openState - Whether the menu is initially open. Defaults to true.
+     */
+    openMenu(content, position, openState = true) {
+        let pos;
+        if (position instanceof HTMLElement) {
+            const rect = position.getBoundingClientRect();
+            pos = {
+                x: rect.left,
+                y: rect.top,
+            };
+        }
+        else {
+            pos = {
+                x: position.x,
+                y: position.y,
+            };
+        }
+        currentInstructions = {
+            content,
+            position: pos,
+            openState,
+        };
+        console.log(`[Log][ContextMenu/openMenu]: Opening context menu at ${pos.x}, ${pos.y} with content: ${content}`);
+        renderApp();
+    },
+    /**
+     * Closes the currently open context menu.
+     */
+    closeMenu() {
+        currentInstructions.openState = false;
+    },
+};
 /**
- * Draws a custom context menu by appending a custom element to the menu.
- * Initializes the context menu if it hasn't been created yet, clears any existing items,
- * and appends the provided custom element.
- *
- * @param elementToAdd - The HTML element to add to the context menu.
- * @returns The ContextMenu object containing the menu's id and element reference.
+ * Renders the context menu into the application root element based on current instructions.
  */
-export function drawCustomContextMenu(elementToAdd) {
-    if (!contextMenu) {
-        contextMenu = initializeContextMenu();
-    }
-    clearMenu(true);
-    contextMenu.element.append(elementToAdd);
-    return contextMenu;
-}
-/**
- * Sets the position of the context menu on the page.
- * Updates the CSS left and top styles of the menu element to the specified coordinates.
- *
- * @param x - The horizontal position in pixels from the left edge of the viewport.
- * @param y - The vertical position in pixels from the top edge of the viewport.
- */
-export function setContextMenuPos(x, y) {
-    if (!contextMenu) {
+export function renderContextMenu() {
+    if (currentInstructions.content === undefined) {
+        console.warn(`[Warn][ContextMenu/renderContextMenu]: No content to render in context menu. Skipping!`);
         return;
     }
-    contextMenu.element.style.left = `${x}px`;
-    contextMenu.element.style.top = `${y}px`;
-    console.log(`[Log][ContextMenu]: Menu position set to (${x}px, ${y}px).`);
-}
-/**
- *  Sets the position of the context menu to the top-left corner of a target element.
- *  Updates the CSS left and top styles of the menu element to match the target element's position.
- *
- * @param targetElement - The HTMLElement whose position will be used as the reference for the menu's placement.
- */
-export function setContextMenuPosToTarget(targetElement) {
-    console.log(`[Log][ContextMenu]: Setting menu position to ${targetElement.id}`);
-    const rect = targetElement.getBoundingClientRect();
-    setContextMenuPos(rect.left, rect.top);
-}
-/**
- * Closes the context menu by setting its data-state attribute to "close".
- * Triggers CSS transitions or animations defined for the close state.
- */
-export function closeMenu() {
-    if (!contextMenu) {
-        return;
-    }
-    contextMenu.element.setAttribute("data-state", "close");
-    console.log(`[Log][ContextMenu]: Menu set to close state`);
-}
-/**
- * Opens the context menu by setting its data-state attribute to "open".
- * Triggers CSS transitions or animations defined for the open state.
- */
-export function openMenu() {
-    if (!contextMenu) {
-        return;
-    }
-    contextMenu.element.setAttribute("data-state", "open");
-    console.log(`[Log][ContextMenu]: Menu set to open state`);
-}
-/**
- * Clears all items from the context menu.
- * Optionally closes the menu after clearing based on the fullyClear parameter.
- *
- * @param fullyClear - Whether to also close the menu after clearing its contents. Defaults to true.
- */
-export function clearMenu(fullyClear = true) {
-    if (!contextMenu) {
-        return;
-    }
-    contextMenu.element.innerHTML = "";
-    if (fullyClear) {
-        closeMenu();
-    }
-    console.log(`[Log][ContextMenu]: Menu content cleared`);
-}
-function initializeContextMenu() {
+    const { content, position, openState } = currentInstructions;
     const menu = htmlUtils.createElement("ul", [
         "context-menu",
     ]);
+    {
+        if (content instanceof HTMLElement) {
+            menu.append(content);
+        }
+        else {
+            const options = content;
+            options.forEach((entry) => {
+                const listEntry = htmlUtils.createElement("li", [
+                    "context-menu__link",
+                ]);
+                listEntry.events.onClick(() => {
+                    if (!entry.event()) {
+                        currentInstructions.openState = false;
+                        renderApp();
+                    }
+                });
+                const link = htmlUtils.createElement("span", [
+                    "context-menu__label",
+                ]);
+                link.textContent = entry.label;
+                listEntry.append(link);
+                menu.append(listEntry);
+            });
+        }
+        menu.style.left = `${position.x}px`;
+        menu.style.top = `${position.y}px`;
+        menu.setAttribute("data-state", currentInstructions.openState ? "open" : "close");
+    }
     app.append(menu);
-    console.log(`[Log][ContextMenu]: Initialized context menu.`);
-    return { id: UUID.new(), element: menu };
 }
+let currentInstructions = {
+    content: undefined,
+    position: { x: 0, y: 0 },
+    openState: false,
+};
 //# sourceMappingURL=context-menu.js.map

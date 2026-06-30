@@ -1,61 +1,49 @@
-import { UUID } from "../core/data.js";
 export {};
+/**
+ * Represents the state and content of a context menu.
+ */
 export interface ContextMenu {
-    id: UUID;
-    element: HTMLUListElement;
+    /** The content to display in the menu, either an array of options or a custom HTMLElement. */
+    content: ContextMenuOption[] | HTMLElement | undefined;
+    /** The position where the menu should be displayed. */
+    position: {
+        x: number;
+        y: number;
+    };
+    /** Whether the menu is currently open. */
+    openState: boolean;
 }
+/**
+ * Represents a single option in a context menu.
+ */
 export interface ContextMenuOption {
+    /** The label text to display for this option. */
     label: string;
+    /** The callback function executed when this option is selected. If it returns false, the menu will close. */
     event: () => boolean | void;
 }
 /**
- * Draws a context menu with the specified options.
- * Initializes the context menu if it hasn't been created yet, clears any existing items,
- * and populates it with links based on the provided options.
- *
- * @param options - Array of context menu option objects containing labels and click event handlers.
- * @returns The ContextMenu object containing the menu's id and element reference.
+ * Namespace for managing context menus.
  */
-export declare function drawContextMenu(options: ContextMenuOption[], openState?: boolean): ContextMenu;
+export declare const ContextMenu: {
+    /**
+     * Opens a context menu with the specified content and position.
+     *
+     * @param content - The content to display in the menu, either an array of options or a custom HTMLElement.
+     * @param position - The position where the menu should be displayed, as coordinates or an HTMLElement (uses its bounding rect).
+     * @param openState - Whether the menu is initially open. Defaults to true.
+     */
+    openMenu<TElement extends HTMLElement>(content: ContextMenuOption[] | TElement, position: {
+        x: number;
+        y: number;
+    } | TElement, openState?: boolean): void;
+    /**
+     * Closes the currently open context menu.
+     */
+    closeMenu(): void;
+};
 /**
- * Draws a custom context menu by appending a custom element to the menu.
- * Initializes the context menu if it hasn't been created yet, clears any existing items,
- * and appends the provided custom element.
- *
- * @param elementToAdd - The HTML element to add to the context menu.
- * @returns The ContextMenu object containing the menu's id and element reference.
+ * Renders the context menu into the application root element based on current instructions.
  */
-export declare function drawCustomContextMenu<TElement extends HTMLElement>(elementToAdd: TElement): ContextMenu;
-/**
- * Sets the position of the context menu on the page.
- * Updates the CSS left and top styles of the menu element to the specified coordinates.
- *
- * @param x - The horizontal position in pixels from the left edge of the viewport.
- * @param y - The vertical position in pixels from the top edge of the viewport.
- */
-export declare function setContextMenuPos(x: number, y: number): void;
-/**
- *  Sets the position of the context menu to the top-left corner of a target element.
- *  Updates the CSS left and top styles of the menu element to match the target element's position.
- *
- * @param targetElement - The HTMLElement whose position will be used as the reference for the menu's placement.
- */
-export declare function setContextMenuPosToTarget<TElement extends HTMLElement>(targetElement: TElement): void;
-/**
- * Closes the context menu by setting its data-state attribute to "close".
- * Triggers CSS transitions or animations defined for the close state.
- */
-export declare function closeMenu(): void;
-/**
- * Opens the context menu by setting its data-state attribute to "open".
- * Triggers CSS transitions or animations defined for the open state.
- */
-export declare function openMenu(): void;
-/**
- * Clears all items from the context menu.
- * Optionally closes the menu after clearing based on the fullyClear parameter.
- *
- * @param fullyClear - Whether to also close the menu after clearing its contents. Defaults to true.
- */
-export declare function clearMenu(fullyClear?: boolean): void;
+export declare function renderContextMenu(): void;
 //# sourceMappingURL=context-menu.d.ts.map

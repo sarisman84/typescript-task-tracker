@@ -1,3 +1,4 @@
+import { renderContextMenu } from "../components/context-menu.js";
 import { drawNewListButton } from "../components/new-list-button.js";
 import { drawNewTaskButton } from "../components/new-task-button.js";
 import { drawTaskCard } from "../components/task-card.js";
@@ -16,6 +17,12 @@ export function renderEmptyState(fullClear = false) {
  */
 export function renderApp() {
     app.innerHTML = ""; // Clear the app container before rendering
+    renderContextMenu();
+    renderTaskboard();
+    const element = drawNewListButton();
+    app.append(element);
+}
+function renderTaskboard() {
     taskLists.forEach((taskList) => {
         const taskListElement = drawTaskList(taskList);
         const relatedTasks = tasks.filter((task) => task.listId === taskList.id);
@@ -29,7 +36,5 @@ export function renderApp() {
         const emptyTask = drawNewTaskButton(taskList.id);
         taskListElement.append(emptyTask);
     });
-    const element = drawNewListButton();
-    app.append(element);
 }
 //# sourceMappingURL=render.js.map

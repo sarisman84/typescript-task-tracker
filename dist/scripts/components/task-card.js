@@ -8,7 +8,7 @@ import { addTagToTask, deleteTask, } from "../core/data management/task-data.js"
 import { renderApp } from "../core/render.js";
 import { htmlUtils } from "../utility/html/html-utils.js";
 import stringUtils from "../utility/string-utils.js";
-import { drawContextMenu, setContextMenuPosToTarget, } from "./context-menu.js";
+import { ContextMenu } from "./context-menu.js";
 /**
  * Draws (renders) a complete task card element.
  *
@@ -65,8 +65,9 @@ function drawTaskCardFooter(task) {
         createTagButton.id = "card__tag--create-button";
         createTagButton.textContent = "+";
         createTagButton.events.onClick((event) => {
-            drawContextMenu(getAvailableTags(task));
-            setContextMenuPosToTarget(createTagButton);
+            event.preventDefault();
+            const tags = getAvailableTags(task);
+            ContextMenu.openMenu(tags, createTagButton);
         });
         footer.append(...tagElements, createTagButton);
     }
@@ -149,6 +150,7 @@ function drawTaskCardHeader(task) {
     return header;
 }
 function getAvailableTags(task) {
+    console.log(`[Log][TaskCard/getAvailableTags]: Fetching available tags for task ${task.id}...`);
     return [
         {
             label: "Pending",
