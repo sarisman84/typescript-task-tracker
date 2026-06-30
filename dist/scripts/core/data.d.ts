@@ -1,3 +1,4 @@
+import type { Task } from "./data management/task-data.js";
 /**
  * Represents the status of a task.
  */
@@ -10,25 +11,6 @@ export declare const UUID: {
     empty: string;
     isValid(uuid: string): boolean;
     "new"(): UUID;
-};
-/**
- * Represents a single task.
- */
-export type Task = {
-    listId: string;
-    id: UUID;
-    description: string;
-    tags: Tag[];
-    createdAt: Date;
-    editFlag: boolean;
-};
-/**
- * Represents a task list.
- */
-export type TaskList = {
-    id: UUID;
-    name: string;
-    createdAt: Date;
 };
 /**
  * Type for HTML elements that may be null.

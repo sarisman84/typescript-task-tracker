@@ -1,6 +1,17 @@
-import { type TaskList, taskLists, UUID, tasks } from "../data.js";
+import { taskLists, UUID, tasks } from "../data.js";
 import { renderApp } from "../render.js";
 import { deleteTask } from "./task-data.js";
+
+export {};
+
+/**
+ * Represents a task list.
+ */
+export type TaskList = {
+  id: UUID;
+  name: string;
+  createdAt: Date;
+};
 
 /**
  * Creates a new task list with the specified name.

@@ -1,5 +1,6 @@
 import { UUID, tasks } from "../data.js";
 import { renderApp } from "../render.js";
+export {};
 /**
  * Creates a new task with the specified details.
  * @param title - The title of the task.
@@ -31,13 +32,4 @@ export function deleteTask(taskId, updateRender = true) {
     }
     console.log(`Task ${taskId} deleted successfully`);
 }
-// export function updateTaskStatus(description: UpdateTaskStatusDesc): void {
-//   const task: Task | undefined = tasks.find((t) => t.id === description.taskId);
-//   if (task === undefined) {
-//     console.error(`Task with ID ${description.taskId} not found`);
-//     return;
-//   }
-//   task.status = description.newStatus;
-//   renderTasks();
-// }
 //# sourceMappingURL=task-data.js.map

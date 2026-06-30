@@ -52,7 +52,9 @@ function drawTaskCardFooter(task) {
             element.setAttribute("data-tag-color", tag.color);
             return element;
         });
-        const createTagButton = htmlUtils.createElement("button", ["card__tag--create-button"]);
+        const createTagButton = htmlUtils.createElement("button", [
+            "card__tag--create-button",
+        ]);
         createTagButton.id = "card__tag--create-button";
         createTagButton.events.onClick((event) => {
             // addTagToTask({"": "yellow"}, task.id);

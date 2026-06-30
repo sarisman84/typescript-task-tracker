@@ -1,4 +1,4 @@
-import { type TaskList } from "../core/data.js";
+import { type TaskList } from "../core/data management/list-data.js";
 /**
  * Renders a task list with a title form and task cards.
  *

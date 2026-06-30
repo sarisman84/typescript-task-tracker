@@ -1,4 +1,16 @@
-import { UUID } from "../data.js";
+import { UUID, type Tag } from "../data.js";
+export {};
+/**
+ * Represents a single task.
+ */
+export type Task = {
+    listId: string;
+    id: UUID;
+    description: string;
+    tags: Tag[];
+    createdAt: Date;
+    editFlag: boolean;
+};
 /**
  * Creates a new task with the specified details.
  * @param title - The title of the task.

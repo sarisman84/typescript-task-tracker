@@ -1,4 +1,11 @@
-import type { Tag, Task } from "../core/data.js";
+/**
+ * Task card component for rendering individual tasks in the UI.
+ *
+ * Provides functions to construct DOM elements representing a task with its
+ * header (date), body (description/content), and footer (tags).
+ */
+import { type Task } from "../core/data management/task-data.js";
+import type { Tag } from "../core/data.js";
 /** Data structure describing the content rendered in a task card. */
 export type DrawTaskCardDesc = {
     /** The description or content of the task. */

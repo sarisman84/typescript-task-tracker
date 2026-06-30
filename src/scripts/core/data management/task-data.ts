@@ -1,5 +1,19 @@
-import { UUID, type Task, tasks } from "../data.js";
+import { UUID, tasks, type Tag } from "../data.js";
 import { renderApp } from "../render.js";
+
+export {};
+
+/**
+ * Represents a single task.
+ */
+export type Task = {
+  listId: string;
+  id: UUID;
+  description: string;
+  tags: Tag[];
+  createdAt: Date;
+  editFlag: boolean;
+};
 
 /**
  * Creates a new task with the specified details.
@@ -39,13 +53,3 @@ export function deleteTask(taskId: UUID, updateRender: boolean = true): void {
 
   console.log(`Task ${taskId} deleted successfully`);
 }
-
-// export function updateTaskStatus(description: UpdateTaskStatusDesc): void {
-//   const task: Task | undefined = tasks.find((t) => t.id === description.taskId);
-//   if (task === undefined) {
-//     console.error(`Task with ID ${description.taskId} not found`);
-//     return;
-//   }
-//   task.status = description.newStatus;
-//   renderTasks();
-// }

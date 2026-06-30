@@ -1,9 +1,11 @@
-import { deleteTaskList } from "../core/data management/list-data.js";
-import { app, type Task, type TaskList } from "../core/data.js";
+import {
+  deleteTaskList,
+  type TaskList,
+} from "../core/data management/list-data.js";
+import { app } from "../core/data.js";
 import { renderApp } from "../core/render.js";
 import { htmlUtils } from "../utility/html/html-utils.js";
 import stringUtils from "../utility/string-utils.js";
-import { drawTaskCard } from "./task-card.js";
 
 /**
  * Renders a task list with a title form and task cards.

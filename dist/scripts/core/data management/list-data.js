@@ -1,6 +1,7 @@
 import { taskLists, UUID, tasks } from "../data.js";
 import { renderApp } from "../render.js";
 import { deleteTask } from "./task-data.js";
+export {};
 /**
  * Creates a new task list with the specified name.
  * @param name - The name of the task list to create.
