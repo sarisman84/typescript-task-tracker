@@ -55,6 +55,8 @@ export function drawContextMenu(
     openMenu();
   }
 
+  console.log(`[Log][ContextMenu]: Drawn [${options.length} options`);
+
   return contextMenu;
 }
 
@@ -90,6 +92,8 @@ export function setContextMenuPos(x: number, y: number): void {
   }
   contextMenu.element.style.left = `${x}px`;
   contextMenu.element.style.top = `${y}px`;
+
+  console.log(`[Log][ContextMenu]: Menu position set to (${x}px, ${y}px).`);
 }
 
 /**
@@ -101,6 +105,9 @@ export function setContextMenuPos(x: number, y: number): void {
 export function setContextMenuPosToTarget<TElement extends HTMLElement>(
   targetElement: TElement,
 ): void {
+  console.log(
+    `[Log][ContextMenu]: Setting menu position to ${targetElement.id}`,
+  );
   const rect = targetElement.getBoundingClientRect();
   setContextMenuPos(rect.left, rect.top);
 }
@@ -114,6 +121,7 @@ export function closeMenu() {
     return;
   }
   contextMenu.element.setAttribute("data-state", "close");
+  console.log(`[Log][ContextMenu]: Menu set to close state`);
 }
 
 /**
@@ -125,6 +133,7 @@ export function openMenu() {
     return;
   }
   contextMenu.element.setAttribute("data-state", "open");
+  console.log(`[Log][ContextMenu]: Menu set to open state`);
 }
 
 /**
@@ -141,6 +150,8 @@ export function clearMenu(fullyClear: boolean = true) {
   if (fullyClear) {
     closeMenu();
   }
+
+  console.log(`[Log][ContextMenu]: Menu content cleared`);
 }
 
 function initializeContextMenu(): ContextMenu {
@@ -149,6 +160,6 @@ function initializeContextMenu(): ContextMenu {
   ]);
 
   app.append(menu);
-
+  console.log(`[Log][ContextMenu]: Initialized context menu.`);
   return { id: UUID.new(), element: menu };
 }

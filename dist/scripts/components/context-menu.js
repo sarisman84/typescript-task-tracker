@@ -35,6 +35,7 @@ export function drawContextMenu(options, openState = true) {
     if (openState) {
         openMenu();
     }
+    console.log(`[Log][ContextMenu]: Drawn [${options.length} options`);
     return contextMenu;
 }
 /**
@@ -66,6 +67,7 @@ export function setContextMenuPos(x, y) {
     }
     contextMenu.element.style.left = `${x}px`;
     contextMenu.element.style.top = `${y}px`;
+    console.log(`[Log][ContextMenu]: Menu position set to (${x}px, ${y}px).`);
 }
 /**
  *  Sets the position of the context menu to the top-left corner of a target element.
@@ -74,6 +76,7 @@ export function setContextMenuPos(x, y) {
  * @param targetElement - The HTMLElement whose position will be used as the reference for the menu's placement.
  */
 export function setContextMenuPosToTarget(targetElement) {
+    console.log(`[Log][ContextMenu]: Setting menu position to ${targetElement.id}`);
     const rect = targetElement.getBoundingClientRect();
     setContextMenuPos(rect.left, rect.top);
 }
@@ -86,6 +89,7 @@ export function closeMenu() {
         return;
     }
     contextMenu.element.setAttribute("data-state", "close");
+    console.log(`[Log][ContextMenu]: Menu set to close state`);
 }
 /**
  * Opens the context menu by setting its data-state attribute to "open".
@@ -96,6 +100,7 @@ export function openMenu() {
         return;
     }
     contextMenu.element.setAttribute("data-state", "open");
+    console.log(`[Log][ContextMenu]: Menu set to open state`);
 }
 /**
  * Clears all items from the context menu.
@@ -111,12 +116,14 @@ export function clearMenu(fullyClear = true) {
     if (fullyClear) {
         closeMenu();
     }
+    console.log(`[Log][ContextMenu]: Menu content cleared`);
 }
 function initializeContextMenu() {
     const menu = htmlUtils.createElement("ul", [
         "context-menu",
     ]);
     app.append(menu);
+    console.log(`[Log][ContextMenu]: Initialized context menu.`);
     return { id: UUID.new(), element: menu };
 }
 //# sourceMappingURL=context-menu.js.map

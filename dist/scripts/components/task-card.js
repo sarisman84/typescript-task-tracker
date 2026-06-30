@@ -8,6 +8,7 @@ import { addTagToTask, deleteTask, } from "../core/data management/task-data.js"
 import { renderApp } from "../core/render.js";
 import { htmlUtils } from "../utility/html/html-utils.js";
 import stringUtils from "../utility/string-utils.js";
+import { drawContextMenu, setContextMenuPosToTarget, } from "./context-menu.js";
 /**
  * Draws (renders) a complete task card element.
  *
@@ -64,12 +65,8 @@ function drawTaskCardFooter(task) {
         createTagButton.id = "card__tag--create-button";
         createTagButton.textContent = "+";
         createTagButton.events.onClick((event) => {
-            const desc = {
-                task,
-                value: "Temp",
-                color: "pink",
-            };
-            addTagToTask(desc);
+            drawContextMenu(getAvailableTags(task));
+            setContextMenuPosToTarget(createTagButton);
         });
         footer.append(...tagElements, createTagButton);
     }
@@ -150,5 +147,27 @@ function drawTaskCardHeader(task) {
         header.append(dateElement, deleteButton);
     }
     return header;
+}
+function getAvailableTags(task) {
+    return [
+        {
+            label: "Pending",
+            event: () => {
+                addTagToTask({ task, value: "Pending", color: "green" });
+            },
+        },
+        {
+            label: "In-progress",
+            event: () => {
+                addTagToTask({ task, value: "In-progress", color: "yellow" });
+            },
+        },
+        {
+            label: "Completed",
+            event: () => {
+                addTagToTask({ task, value: "Completed", color: "black" });
+            },
+        },
+    ];
 }
 //# sourceMappingURL=task-card.js.map
