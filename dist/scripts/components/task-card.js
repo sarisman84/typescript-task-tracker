@@ -32,12 +32,12 @@ export function drawTaskCard(task) {
  * @param tags - Array of tags to display in the footer.
  * @returns A footer element containing the tag spans.
  */
-function drawTaskCardFooter(tags) {
+function drawTaskCardFooter(task) {
     const footer = htmlUtils.createElement("footer", [
         "card__footer",
     ]);
     {
-        const tagElements = tags.map((tag, index) => {
+        const tagElements = task.tags.map((tag, index) => {
             const element = htmlUtils.createElement("span", [
                 "card__tag",
             ]);
@@ -45,6 +45,11 @@ function drawTaskCardFooter(tags) {
             element.textContent = tag.name;
             element.setAttribute("data-tag-color", tag.color);
             return element;
+        });
+        const createTagButton = htmlUtils.createElement("button", ["card__tag--create-button"]);
+        createTagButton.id = "card__tag--create-button";
+        createTagButton.events.onClick((event) => {
+            addTagToTask({ "": "yellow" }, task.id);
         });
         footer.append(...tagElements);
     }
@@ -110,15 +115,6 @@ function drawTaskCardHeader(task) {
         ]);
         dateElement.id = "card__date";
         dateElement.textContent = stringUtils.formatDate(task.createdAt);
-        //TODO: Figure out how to make context menus work properly. This is a placeholder for now.
-        // const contextMenuOptions: HTMLContextMenuOption[] = [
-        //   { name: "Delete", selectEvent: () => {} },
-        // ];
-        // const contextMenu: HTMLButtonElement = htmlUtils.createContextMenu(
-        //   contextMenuOptions,
-        //   "card__context-menu",
-        //   { button: ["card__context-menu"], menu: [], options: [] },
-        // );
         const deleteButton = htmlUtils.createElement("button", [
             "u-button",
             "u-button--delete",
