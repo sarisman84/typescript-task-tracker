@@ -1,6 +1,6 @@
+import { deleteTaskList } from "../core/data management/list-data.js";
 import { app } from "../core/data.js";
 import { renderApp } from "../core/render.js";
-import { deleteTaskList } from "../core/tasktracker.js";
 import { htmlUtils } from "../utility/html/html-utils.js";
 import stringUtils from "../utility/string-utils.js";
 import { drawTaskCard } from "./task-card.js";

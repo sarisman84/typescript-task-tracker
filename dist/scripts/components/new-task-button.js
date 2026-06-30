@@ -1,4 +1,4 @@
-import { createTask } from "../core/tasktracker.js";
+import { createTask } from "../core/data management/task-data.js";
 import { htmlUtils } from "../utility/html/html-utils.js";
 export function drawNewTaskButton(targetListId) {
     const section = htmlUtils.createElement("section", [

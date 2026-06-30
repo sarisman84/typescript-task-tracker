@@ -1,5 +1,4 @@
-import type { TaskList } from "../core/data.js";
-import { createTaskList } from "../core/tasktracker.js";
+import { createTaskList } from "../core/data management/list-data.js";
 import { htmlUtils } from "../utility/html/html-utils.js";
 
 export function drawNewListButton(): HTMLElement {

@@ -1,4 +1,10 @@
-import { deleteTask } from "../core/tasktracker.js";
+/**
+ * Task card component for rendering individual tasks in the UI.
+ *
+ * Provides functions to construct DOM elements representing a task with its
+ * header (date), body (description/content), and footer (tags).
+ */
+import { deleteTask } from "../core/data management/task-data.js";
 import { htmlUtils } from "../utility/html/html-utils.js";
 import stringUtils from "../utility/string-utils.js";
 /**
@@ -19,7 +25,7 @@ export function drawTaskCard(task) {
     //Create card body and its related elements
     const body = drawTaskCardBody(task);
     // Create card footer and its related elements.
-    const footer = drawTaskCardFooter(tags);
+    const footer = drawTaskCardFooter(task);
     card.append(header, body, footer);
     return card;
 }
@@ -49,7 +55,7 @@ function drawTaskCardFooter(task) {
         const createTagButton = htmlUtils.createElement("button", ["card__tag--create-button"]);
         createTagButton.id = "card__tag--create-button";
         createTagButton.events.onClick((event) => {
-            addTagToTask({ "": "yellow" }, task.id);
+            // addTagToTask({"": "yellow"}, task.id);
         });
         footer.append(...tagElements);
     }

@@ -4,8 +4,8 @@
  * Provides functions to construct DOM elements representing a task with its
  * header (date), body (description/content), and footer (tags).
  */
+import { deleteTask } from "../core/data management/task-data.js";
 import type { Tag, Task } from "../core/data.js";
-import { deleteTask } from "../core/tasktracker.js";
 import { htmlUtils } from "../utility/html/html-utils.js";
 import stringUtils from "../utility/string-utils.js";
 
@@ -43,7 +43,7 @@ export function drawTaskCard(task: Task): HTMLFormElement {
   const body: HTMLElement = drawTaskCardBody(task);
 
   // Create card footer and its related elements.
-  const footer: HTMLElement = drawTaskCardFooter(tags);
+  const footer: HTMLElement = drawTaskCardFooter(task);
 
   card.append(header, body, footer);
   return card;
@@ -76,7 +76,7 @@ function drawTaskCardFooter(task: Task) {
     const createTagButton = htmlUtils.createElement("button", ["card__tag--create-button"]);
     createTagButton.id = "card__tag--create-button";
     createTagButton.events.onClick((event: PointerEvent) => {
-        addTagToTask({"": "yellow"}, task.id);
+        // addTagToTask({"": "yellow"}, task.id);
     });
 
     footer.append(...tagElements);
