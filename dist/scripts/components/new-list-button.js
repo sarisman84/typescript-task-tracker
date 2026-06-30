@@ -1,5 +1,5 @@
 import { createTaskList } from "../core/tasktracker.js";
-import { htmlUtils } from "../utility/html-utils.js";
+import { htmlUtils } from "../utility/html/html-utils.js";
 export function drawNewListButton() {
     const section = htmlUtils.createElement("section", [
         "task-list",

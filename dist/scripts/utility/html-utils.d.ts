@@ -1,10 +1,6 @@
 import type { HTMLTag } from "./html-tag.js";
-export interface HTMLContextMenuOption {
-    name: string;
-    selectEvent: () => void;
-}
-export interface HTMLContextMenu extends HTMLElement {
-}
+import type { HTMLContextMenuOption } from "./HTMLContextMenuOption.js";
+export {};
 export declare const htmlUtils: {
     /**
      * Creates a new DOM element of the specified type with the given CSS classes.
@@ -16,6 +12,7 @@ export declare const htmlUtils: {
     createElement<T extends HTMLElement>(type: HTMLTag, classList?: string[]): T;
     createForm(classList?: string[]): HTMLElement;
     createInput(classList?: string[]): HTMLInputElement;
+    createLabel(classList?: string[]): HTMLLabelElement;
     /**
      * Creates a dropdown (select) element with the given options and change handler.
      *

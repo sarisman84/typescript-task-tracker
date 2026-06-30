@@ -1,6 +1,6 @@
 import type { TaskList } from "../core/data.js";
 import { createTaskList } from "../core/tasktracker.js";
-import { htmlUtils } from "../utility/html-utils.js";
+import { htmlUtils } from "../utility/html/html-utils.js";
 
 export function drawNewListButton(): HTMLElement {
   const section: HTMLElement = htmlUtils.createElement("section", [

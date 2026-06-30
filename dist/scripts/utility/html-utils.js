@@ -1,4 +1,5 @@
 import stringUtils from "./string-utils.js";
+export {};
 export const htmlUtils = {
     /**
      * Creates a new DOM element of the specified type with the given CSS classes.
@@ -22,6 +23,9 @@ export const htmlUtils = {
     },
     createInput(classList = []) {
         return this.createElement("input", classList);
+    },
+    createLabel(classList = []) {
+        return this.createElement("label", classList);
     },
     /**
      * Creates a dropdown (select) element with the given options and change handler.

@@ -1,18 +1,35 @@
+/**
+ * Task card component for rendering individual tasks in the UI.
+ *
+ * Provides functions to construct DOM elements representing a task with its
+ * header (date), body (description/content), and footer (tags).
+ */
 import type { Tag, Task } from "../core/data.js";
-import {
-  htmlUtils,
-  type HTMLContextMenu,
-  type HTMLContextMenuOption,
-} from "../utility/html-utils.js";
+import { deleteTask } from "../core/tasktracker.js";
+import { htmlUtils } from "../utility/html/html-utils.js";
 import stringUtils from "../utility/string-utils.js";
 
+/** Data structure describing the content rendered in a task card. */
 export type DrawTaskCardDesc = {
+  /** The description or content of the task. */
   content: string;
+  /** Associated tags for the task. */
   tags: Tag[];
+  /** The creation date of the task. */
   date: Date;
+  /** Unique identifier for the task. */
   id: string;
 };
 
+/**
+ * Draws (renders) a complete task card element.
+ *
+ * Constructs a `<form>` element containing a header with the creation date,
+ * a body with the task description, and a footer with associated tags.
+ *
+ * @param task - The task object to render.
+ * @returns A form element representing the task card.
+ */
 export function drawTaskCard(task: Task): HTMLFormElement {
   const { description, createdAt, tags, id } = task;
 
@@ -20,10 +37,10 @@ export function drawTaskCard(task: Task): HTMLFormElement {
   card.id = card.name = `card_${id}`;
 
   // Create card header and its related elements.
-  const header: HTMLElement = drawTaskCardHeader(createdAt);
+  const header: HTMLElement = drawTaskCardHeader(task);
 
   //Create card body and its related elements
-  const body: HTMLElement = drawTaskCardBody(description);
+  const body: HTMLElement = drawTaskCardBody(task);
 
   // Create card footer and its related elements.
   const footer: HTMLElement = drawTaskCardFooter(tags);
@@ -32,6 +49,15 @@ export function drawTaskCard(task: Task): HTMLFormElement {
   return card;
 }
 
+/**
+ * Draws the footer of a task card containing tag elements.
+ *
+ * Creates a `<footer>` element with child `<span>` elements for each tag,
+ * setting the tag name as text content and the color as a data attribute.
+ *
+ * @param tags - Array of tags to display in the footer.
+ * @returns A footer element containing the tag spans.
+ */
 function drawTaskCardFooter(tags: Tag[]) {
   const footer: HTMLElement = htmlUtils.createElement("footer", [
     "card__footer",
@@ -52,8 +78,17 @@ function drawTaskCardFooter(tags: Tag[]) {
   return footer;
 }
 
-function drawTaskCardBody(description: string) {
-  const body: HTMLElement = htmlUtils.createElement("div", ["card__body"]);
+/**
+ * Draws the body of a task card containing the description.
+ *
+ * Creates a `<div>` with a label and a textarea element for displaying
+ * and potentially editing the task description.
+ *
+ * @param description - The text content to display in the body.
+ * @returns A body div element containing the label and textarea.
+ */
+function drawTaskCardBody(task: Task) {
+  const body: HTMLElement = htmlUtils.createForm(["card__body"]);
   {
     const label: HTMLLabelElement = htmlUtils.createElement("label", [
       "sc-only",
@@ -62,20 +97,43 @@ function drawTaskCardBody(description: string) {
     label.textContent = "Description";
 
     const textArea: HTMLTextAreaElement = htmlUtils.createElement("textarea", [
-      "task-card__content",
+      "card__content",
     ]);
 
     textArea.id = "card__content";
-    textArea.textContent = description;
+    textArea.placeholder = "Describe your task...";
+    textArea.value = task.description;
+    textArea.rows = 5;
 
     label.setAttribute("for", "card__content");
 
     body.append(label, textArea);
+    body.events.onSubmit((event: SubmitEvent) => {
+      event.preventDefault();
+      task.description = textArea.value;
+    });
+
+    body.events.onKeyDown((event: KeyboardEvent) => {
+      if (event.shiftKey || event.key != "Enter") {
+        return;
+      }
+      task.description = textArea.value;
+      textArea.blur();
+    });
   }
   return body;
 }
 
-function drawTaskCardHeader(createdAt: Date) {
+/**
+ * Draws the header of a task card containing the creation date and context menu.
+ *
+ * Creates a `<header>` element with a paragraph showing the formatted
+ * creation date and a context menu button for actions like deletion.
+ *
+ * @param task - The task object containing creation date information.
+ * @returns A header element containing the date and context menu.
+ */
+function drawTaskCardHeader(task: Task) {
   const header: HTMLElement = htmlUtils.createElement("header", [
     "card__header",
   ]);
@@ -86,18 +144,32 @@ function drawTaskCardHeader(createdAt: Date) {
       "card__date",
     ]);
     dateElement.id = "card__date";
-    dateElement.textContent = stringUtils.formatDate(createdAt);
+    dateElement.textContent = stringUtils.formatDate(task.createdAt);
 
-    const contextMenuOptions: HTMLContextMenuOption[] = [
-      { name: "Delete", selectEvent: () => {} },
-    ];
-    const contextMenu: HTMLButtonElement = htmlUtils.createContextMenu(
-      contextMenuOptions,
-      "card__context-menu",
-      { button: ["card__context-menu"], menu: [], options: [] },
-    );
+    //TODO: Figure out how to make context menus work properly. This is a placeholder for now.
+    // const contextMenuOptions: HTMLContextMenuOption[] = [
+    //   { name: "Delete", selectEvent: () => {} },
+    // ];
+    // const contextMenu: HTMLButtonElement = htmlUtils.createContextMenu(
+    //   contextMenuOptions,
+    //   "card__context-menu",
+    //   { button: ["card__context-menu"], menu: [], options: [] },
+    // );
+    const deleteButton: HTMLButtonElement = htmlUtils.createElement("button", [
+      "u-button",
+      "u-button--delete",
+    ]);
+    deleteButton.textContent = "Delete";
+    deleteButton.id = "card__delete-button";
 
-    header.append(dateElement, contextMenu);
+    // deleteButton.addEventListener("click", () => {
+    //   deleteTask(task.id);
+    // });
+    deleteButton.events.onClick(() => {
+      deleteTask(task.id);
+    });
+
+    header.append(dateElement, deleteButton);
   }
   return header;
 }

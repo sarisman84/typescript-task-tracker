@@ -188,6 +188,16 @@ body {
    5. Default Blocks
    Base styling for typescript generated elements.
    ========================================== */
+.sc-only {
+  clip: rect(1px, 1px, 1px, 1px);
+  clip-path: inset(50%);
+  height: 1px;
+  width: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+}
 
 .context-menu {
   position: absolute;
@@ -201,11 +211,11 @@ body {
   visibility: visible;
 }
 
-.context-menu__button {
+/* .context-menu__button {
 }
 
 .context-menu__option-button {
-}
+} */
 
 /* ==========================================
   6. Blocks
@@ -327,6 +337,7 @@ body {
 }
 
 .card__body {
+  width: 100%;
 }
 
 .card__content {
@@ -334,21 +345,23 @@ body {
 
   padding: var(--padding-content);
 
-  color: var(--text-900);
-  background-color: var(--background-400);
+  color: var(--text-200);
+  background-color: var(--background-500);
 
   border-color: transparent;
-
   border-radius: var(--border-radius-card);
+
+  resize: vertical;
 }
 
 .card__content:hover {
-  color: var(--accent-900);
+  color: var(--accent-200);
+  background-color: var(--background-600);
 }
 
 .card__content:focus-visible {
-  color: var(--accent-900);
-  background-color: var(--background-300);
+  color: var(--accent-300);
+  background-color: var(--background-700);
   outline: none;
 }
 
@@ -359,8 +372,8 @@ body {
   align-items: center;
 }
 
-.card__context-menu {
-}
+/* .card__context-menu {
+} */
 
 /* ==========================================
    7. Task Status Badge

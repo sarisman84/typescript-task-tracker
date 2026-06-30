@@ -2,7 +2,7 @@ import { drawNewListButton } from "../components/new-list-button.js";
 import { drawNewTaskButton } from "../components/new-task-button.js";
 import { drawTaskCard } from "../components/task-card.js";
 import { drawTaskList } from "../components/task-list.js";
-import { htmlUtils } from "../utility/html-utils.js";
+import { htmlUtils } from "../utility/html/html-utils.js";
 import { app, taskLists, tasks, type Task, type TaskList } from "./data.js";
 
 export function renderEmptyState(fullClear: boolean = false): void {

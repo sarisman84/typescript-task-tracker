@@ -1,5 +1,5 @@
 import { createTask } from "../core/tasktracker.js";
-import { htmlUtils } from "../utility/html-utils.js";
+import { htmlUtils } from "../utility/html/html-utils.js";
 export function drawNewTaskButton(targetListId) {
     const section = htmlUtils.createElement("section", [
         "u-transparent",
