@@ -9,30 +9,12 @@ let nextId = 1;
 
 
 const taskInput = document.querySelector("#task-input") as HTMLInputElement;
-//const addButton = document.querySelector("#add-button") as HTMLButtonElement;
+
 const priorityInput = document.querySelector("#priority-input") as HTMLSelectElement;
-// const completeButton = document.querySelector(".compButton") as HTMLButtonElement;
 
 const form = document.querySelector("#task-form") as HTMLFormElement;
 
 const errorMessage = document.querySelector("#error-message") as HTMLParagraphElement;
-
-
-// addButton.addEventListener("click", () => {
-//     const taskName = taskInput.value.trim();
-
-//     if (taskName === "") {
-//         console.log("Task name is required.");
-//         return;
-//     }
-//     const priority = priorityInput.value as TaskPriority;
-
-//     addTask(taskName, priority);
-// })
-
-// completeButton.addEventListener("click", () => {
-//     // completeTask(task);
-// })
 
 
 form.addEventListener("submit", handleSubmit);
@@ -171,7 +153,6 @@ function renderTasks(): void {
         completeButton.classList.add("btn");
         completeButton.textContent = task.status === "pending" ? "Complete" : "Undo";
         completeButton.addEventListener("click", () => {
-            // completeTask(task.name);
             toggleTask(task.id);
         })
 

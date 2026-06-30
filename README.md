@@ -29,3 +29,5 @@ Dag 7: [DOM Grunder](https://github.com/Lexicon-Utbildning-Front-end-2026/typesc
 Dag 8: [Events & Interaktion](https://github.com/Lexicon-Utbildning-Front-end-2026/typescript-dag8-ovning)
 
 Dag 9: [Formulär och validering](https://github.com/Lexicon-Utbildning-Front-end-2026/typescript-dag9-ovning)
+
+Dag 10: [LocalStorage & JSON](https://github.com/Lexicon-Utbildning-Front-end-2026/typescript-dag10-localstorage-json)

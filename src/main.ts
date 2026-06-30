@@ -1,109 +1,209 @@
 
 
+const title = document.querySelector("#title") as HTMLHeadingElement;
+title.textContent = "Mina Tasks";
+
+const app = document.querySelector("#app");
+
+const taskInput = document.querySelector("#task-input") as HTMLInputElement;
+
+const priorityInput = document.querySelector("#priority-input") as HTMLSelectElement;
+
+const form = document.querySelector("#task-form") as HTMLFormElement;
+
+const errorMessage = document.querySelector("#error-message") as HTMLParagraphElement;
+
+
+let nextId = 1;
+
 type Task = {
+    id: number;
     name: string;
-    completed: boolean;
-    priority: number;
-    description?: string;
-}
+    status: "pending" | "completed";
+    priority: "low" | "medium" | "high";
+};
+
+type TaskPriority = "low" | "medium" | "high";
 
 
-const tasks: Task[] = [
-    {
-        name: "Diska",
-        completed: false,
-        priority: 2
-    },
-    {
-        name: "Träna",
-        completed: false,
-        priority: 3,
-        description: "Spring 5km"
-    },
-    {
-        name: "Handla",
-        completed: true,
-        priority: 4,
-        description: "3l mjölk"
+let tasks: Task[] = [];
+
+
+form.addEventListener("submit", handleSubmit);
+
+
+function handleSubmit(event: SubmitEvent): void {
+    event.preventDefault();
+
+    const taskName = taskInput.value.trim();
+    const priority = priorityInput.value as TaskPriority;
+
+    const error = validateTaskName(taskName);
+
+    if (error !== "") {
+        errorMessage.textContent = error;
+        return;
     }
-];
 
+    errorMessage.textContent = "";
 
-function showHeader(): void {
-    console.log("========================");
-    console.log("TASK TRACKER!");
-    console.log("========================");
+    addTask(taskName, priority);
+    renderTasks();
 }
 
 
-function addTask(task: Task) {
-    tasks.push(task);
-}
+function validateTaskName(name: string): string {
+    if (name === "") return "Task name is required"
 
-function showTasks() {
-    // const taskNames = tasks.map(task => task.name);
-    // console.log(taskNames);
-
-    tasks.forEach(task => {
-        console.log(task.name, task.completed);
-    })
-}
-
-function showTask(task: Task | undefined) {
-    console.log(task?.name);
-}
-
-function showPendingTasks() {
-    for (const task of tasks) {
-        if (!task.completed) {
-            console.log(task.name);
-        }
+    if (name.length < 3) {
+        return "Task name must be at least 3 characters."
     }
-}
 
-function showCompletedTasks() {
-    for (const task of tasks) {
-        if (task.completed) {
-            console.log(task.name);
-        }
+    if (name.length > 40) {
+        return "Task name cannot be longer than 40 characters."   
     }
-}
 
-function completeTask(taskName: string) {
-    for (const task of tasks) {
-        if (task.name === taskName) {
-            task.completed = true;
-        }
+    if (taskExists(name)) {
+        return "Task name with that name already exists."
     }
+
+    return "";
 }
 
-function showStatistics() {
-    let completed = 0;
-    let pending = 0;
+
+function taskExists(name: string): boolean {
     for (const task of tasks) {
-        if (task.completed) {
-            completed++;
-        } else {
-            pending++;
+        if (task.name.toLowerCase() === name.toLowerCase()) {
+            return true;
         }
     }
 
-    console.log(`Completed: ${completed}, Pending: ${pending}`);
+    return false;
 }
 
-showHeader();
-addTask({
-    name: "Gå ut med hunden",
-    completed: false,
-    priority: 5
-});
-showTasks();
-showTask(tasks[0]);
-console.log("Pending:");
-showPendingTasks();
-console.log("Completed:");
-showCompletedTasks();
-console.log("Completed task:");
-completeTask("Diska");
-showCompletedTasks();
-showStatistics();
+
+function clearForm(): void {
+    taskInput.value = "";
+    priorityInput.value = "medium";
+}
+
+
+function addTask(name: string, priority: TaskPriority): void {
+    const newTask: Task = {
+        id: nextId,
+        name,
+        status: "pending",
+        priority
+    };
+
+    tasks.push(newTask);
+    nextId++;
+
+    saveTasks();
+    
+    clearForm();
+}
+
+
+function saveTasks(): void {
+    const json = JSON.stringify(tasks);
+
+    localStorage.setItem(
+        "tasks",
+        json
+    );
+}
+
+
+function loadTasks(): void {
+    const json = localStorage.getItem("tasks");
+
+    if (json === null) {
+        return;
+    }
+
+    tasks = JSON.parse(json);
+}
+
+
+function toggleTask(id: number): void {
+    for (const task of tasks) {
+        if (task.id === id) {
+            task.status = task.status === "pending" ? "completed" : "pending";
+        }
+    }
+
+    saveTasks();
+
+    renderTasks();
+}
+
+
+function deleteTask(id: number): void {
+    tasks = tasks.filter((task) => task.id !== id); 
+
+    saveTasks();
+
+    renderTasks();
+}
+
+
+function renderTasks(): void {
+    if (app) {
+        app.innerHTML = "";
+    }
+
+    for (const task of tasks) {
+        const card = document.createElement("div");
+        card.classList.add("task");
+
+        if (task.priority === "high") {
+            card.classList.add("high-priority");
+        }
+
+        if (task.status === "completed") {
+            card.classList.add("completed");
+        }
+       
+        const title = document.createElement("h3");
+        title.textContent = task.name;
+
+        const status = document.createElement("p");
+        status.textContent = `Status: ${task.status}`
+
+        const priority = document.createElement("p");
+        priority.textContent = `Priority: ${task.priority}`;
+
+        const completeButton = document.createElement("button");
+        completeButton.classList.add("btn");
+        completeButton.textContent = task.status === "pending" ? "Complete" : "Undo";
+        completeButton.addEventListener("click", () => {
+            toggleTask(task.id);
+        })
+
+        const deleteButton = document.createElement("button");
+        deleteButton.classList.add("btn");
+        deleteButton.textContent = "Delete";
+        deleteButton.addEventListener("click", () => {
+            deleteTask(task.id);
+        })
+
+        card.append(
+            title,
+            status,
+            priority,
+            completeButton,
+            deleteButton
+        );
+
+        app?.append(card);
+    }
+
+    
+    
+}
+
+loadTasks();
+renderTasks();
+
+
