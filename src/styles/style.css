@@ -387,6 +387,18 @@ main {
   color: var(--text-200);
 }
 
+.card__grabber {
+  color: var(--primary-400);
+  position: absolute;
+  left: 9.5rem;
+}
+
+.card__grabber:hover {
+  cursor: grab;
+}
+.card__context-menu {
+}
+
 .card__body {
   width: 100%;
 }

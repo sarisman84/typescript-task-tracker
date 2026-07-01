@@ -29,6 +29,11 @@ export type DrawTaskCardDesc = {
   id: string;
 };
 
+export type TaskCard = {
+  card: HTMLFormElement;
+  grabber: HTMLElement;
+};
+
 /**
  * Draws (renders) a complete task card element.
  *
@@ -38,7 +43,7 @@ export type DrawTaskCardDesc = {
  * @param task - The task object to render.
  * @returns A form element representing the task card.
  */
-export function drawTaskCard(task: Task): HTMLFormElement {
+export function drawTaskCard(task: Task): TaskCard {
   const { id } = task;
 
   const card: HTMLFormElement = htmlUtils.createElement("form", `card_${id}`, [
@@ -56,7 +61,7 @@ export function drawTaskCard(task: Task): HTMLFormElement {
   });
 
   // Create card header and its related elements.
-  const header: HTMLElement = drawTaskCardHeader(task);
+  const { header, grabber } = drawTaskCardHeader(task, card);
 
   //Create card body and its related elements
   const body: HTMLElement = drawTaskCardBody(task);
@@ -65,7 +70,7 @@ export function drawTaskCard(task: Task): HTMLFormElement {
   const footer: HTMLElement = drawTaskCardFooter(task);
 
   card.append(header, body, footer);
-  return card;
+  return { card, grabber };
 }
 
 /**
@@ -191,36 +196,44 @@ function drawContentTextArea(task: Task, body: HTMLElement) {
  * @param task - The task object containing creation date information.
  * @returns A header element containing the date and context menu.
  */
-function drawTaskCardHeader(task: Task) {
+function drawTaskCardHeader(
+  task: Task,
+  card: HTMLFormElement,
+): { header: HTMLElement; grabber: HTMLElement } {
   const header: HTMLElement = htmlUtils.createElement(
     "header",
     "task-card__header",
     ["card__header"],
   );
-  {
-    header.id = "card__header";
+  const grabber: HTMLElement = htmlUtils.createElement(
+    "button",
+    "task-card__grabber",
+    ["card__grabber", "u-icon", "fa-solid", "fa-grip"],
+  );
 
-    const dateElement: HTMLParagraphElement = htmlUtils.createElement(
-      "p",
-      "task-card__date",
-      ["card__date"],
-    );
-    dateElement.textContent = stringUtils.formatDate(task.createdAt);
+  header.id = "card__header";
 
-    const contextMenuButton: HTMLButtonElement = htmlUtils.createElement(
-      "button",
-      "task-card__context-menu-button",
-      ["u-icon", "fa-solid", "fa-ellipsis-vertical"],
-    );
+  const dateElement: HTMLParagraphElement = htmlUtils.createElement(
+    "p",
+    "task-card__date",
+    ["card__date"],
+  );
+  dateElement.textContent = stringUtils.formatDate(task.createdAt);
 
-    contextMenuButton.events.onClick((event: PointerEvent) => {
-      event.preventDefault();
-      drawTaskContextMenu(task, contextMenuButton);
-    });
+  const contextMenuButton: HTMLButtonElement = htmlUtils.createElement(
+    "button",
+    "task-card__context-menu-button",
+    ["card__context-menu", "u-icon", "fa-solid", "fa-ellipsis-vertical"],
+  );
 
-    header.append(dateElement, contextMenuButton);
-  }
-  return header;
+  contextMenuButton.events.onClick((event: PointerEvent) => {
+    event.preventDefault();
+    drawTaskContextMenu(task, contextMenuButton);
+  });
+
+  header.append(dateElement, grabber, contextMenuButton);
+
+  return { header, grabber };
 }
 
 function drawTaskContextMenu(
@@ -295,3 +308,5 @@ function getAvailableTags(task: Task): ContextMenuOption[] {
     optionEvent("Completed", "green"),
   ];
 }
+
+let draggedElement: HTMLElement | undefined | null = null; // Track the dragged element

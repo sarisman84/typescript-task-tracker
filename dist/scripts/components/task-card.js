@@ -33,13 +33,13 @@ export function drawTaskCard(task) {
         drawTaskContextMenu(task, event);
     });
     // Create card header and its related elements.
-    const header = drawTaskCardHeader(task);
+    const { header, grabber } = drawTaskCardHeader(task, card);
     //Create card body and its related elements
     const body = drawTaskCardBody(task);
     // Create card footer and its related elements.
     const footer = drawTaskCardFooter(task);
     card.append(header, body, footer);
-    return card;
+    return { card, grabber };
 }
 /**
  * Draws the footer of a task card containing tag elements.
@@ -127,20 +127,19 @@ function drawContentTextArea(task, body) {
  * @param task - The task object containing creation date information.
  * @returns A header element containing the date and context menu.
  */
-function drawTaskCardHeader(task) {
+function drawTaskCardHeader(task, card) {
     const header = htmlUtils.createElement("header", "task-card__header", ["card__header"]);
-    {
-        header.id = "card__header";
-        const dateElement = htmlUtils.createElement("p", "task-card__date", ["card__date"]);
-        dateElement.textContent = stringUtils.formatDate(task.createdAt);
-        const contextMenuButton = htmlUtils.createElement("button", "task-card__context-menu-button", ["u-icon", "fa-solid", "fa-ellipsis-vertical"]);
-        contextMenuButton.events.onClick((event) => {
-            event.preventDefault();
-            drawTaskContextMenu(task, contextMenuButton);
-        });
-        header.append(dateElement, contextMenuButton);
-    }
-    return header;
+    const grabber = htmlUtils.createElement("button", "task-card__grabber", ["card__grabber", "u-icon", "fa-solid", "fa-grip"]);
+    header.id = "card__header";
+    const dateElement = htmlUtils.createElement("p", "task-card__date", ["card__date"]);
+    dateElement.textContent = stringUtils.formatDate(task.createdAt);
+    const contextMenuButton = htmlUtils.createElement("button", "task-card__context-menu-button", ["card__context-menu", "u-icon", "fa-solid", "fa-ellipsis-vertical"]);
+    contextMenuButton.events.onClick((event) => {
+        event.preventDefault();
+        drawTaskContextMenu(task, contextMenuButton);
+    });
+    header.append(dateElement, grabber, contextMenuButton);
+    return { header, grabber };
 }
 function drawTaskContextMenu(task, position) {
     const options = [
@@ -197,4 +196,5 @@ function getAvailableTags(task) {
         optionEvent("Completed", "green"),
     ];
 }
+let draggedElement = null; // Track the dragged element
 //# sourceMappingURL=task-card.js.map

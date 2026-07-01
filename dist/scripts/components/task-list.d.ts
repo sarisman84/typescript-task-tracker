@@ -1,4 +1,5 @@
 import { type TaskList } from "../core/data management/list-data.js";
+import type { Task } from "../core/data management/task-data.js";
 /**
  * Renders a task list with a title form and task cards.
  *
@@ -10,5 +11,5 @@ import { type TaskList } from "../core/data management/list-data.js";
  * @param tasks - The array of `Task` objects to render as cards within the list
  * @returns A populated `<ul>` element containing the rendered task list
  */
-export declare function drawTaskList(list: TaskList): HTMLElement;
+export declare function drawTaskList(list: TaskList, tasks: Task[]): HTMLElement;
 //# sourceMappingURL=task-list.d.ts.map

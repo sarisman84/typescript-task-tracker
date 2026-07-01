@@ -17,6 +17,10 @@ export type DrawTaskCardDesc = {
     /** Unique identifier for the task. */
     id: string;
 };
+export type TaskCard = {
+    card: HTMLFormElement;
+    grabber: HTMLElement;
+};
 /**
  * Draws (renders) a complete task card element.
  *
@@ -26,5 +30,5 @@ export type DrawTaskCardDesc = {
  * @param task - The task object to render.
  * @returns A form element representing the task card.
  */
-export declare function drawTaskCard(task: Task): HTMLFormElement;
+export declare function drawTaskCard(task: Task): TaskCard;
 //# sourceMappingURL=task-card.d.ts.map

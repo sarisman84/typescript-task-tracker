@@ -24,24 +24,9 @@ export function refreshAppRender(): void {
 }
 export function renderTaskboard(): void {
   taskLists.value.forEach((taskList: TaskList) => {
-    const taskListElement: HTMLElement = drawTaskList(taskList);
     const relatedTasks: Task[] = tasks.value.filter(
       (task) => task.listId === taskList.id,
     );
-
-    relatedTasks.forEach((task: Task) => {
-      // renderRelatedTask(task, taskListElement);
-      const liElement: HTMLLIElement = htmlUtils.createElement(
-        "li",
-        "task-entry",
-      );
-      const card: HTMLFormElement = drawTaskCard(task);
-
-      liElement.append(card);
-      taskListElement.append(liElement);
-    });
-
-    const emptyTask: HTMLElement = drawNewTaskButton(taskList.id);
-    taskListElement.append(emptyTask);
+    drawTaskList(taskList, relatedTasks);
   });
 }
