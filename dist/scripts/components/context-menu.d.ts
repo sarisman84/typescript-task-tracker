@@ -21,7 +21,7 @@ export declare const ContextMenu: {
     openMenu<TElement extends HTMLElement>(content: ContextMenuOption[] | TElement, position: {
         x: number;
         y: number;
-    } | TElement, openState?: boolean): void;
+    } | TElement | PointerEvent, openState?: boolean): void;
     /**
      * Closes the currently open context menu.
      */

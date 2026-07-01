@@ -38,22 +38,30 @@ export const ContextMenu = {
    */
   openMenu<TElement extends HTMLElement>(
     content: ContextMenuOption[] | TElement,
-    position: { x: number; y: number } | TElement,
+    position: { x: number; y: number } | TElement | PointerEvent,
     openState: boolean = true,
   ): void {
-    let pos;
-    if (position instanceof HTMLElement) {
-      const rect = position.getBoundingClientRect();
+    let pos: { x: number; y: number } = { x: 0, y: 0 };
+    const type = Object.prototype.toString.call(position).slice(8, -1);
+
+    if (type === "PointerEvent") {
+      pos = {
+        x: (position as PointerEvent).clientX,
+        y: (position as PointerEvent).clientY,
+      };
+    } else if (type.match(/HTML.*Element/)) {
+      const rect = (position as HTMLElement).getBoundingClientRect();
       pos = {
         x: rect.left,
         y: rect.top,
       };
-    } else {
+    } else if (type === "Object") {
       pos = {
-        x: position.x,
-        y: position.y,
+        x: (position as { x: number; y: number }).x,
+        y: (position as { x: number; y: number }).y,
       };
     }
+
     currentInstructions = {
       content,
       position: pos,

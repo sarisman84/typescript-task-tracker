@@ -13,15 +13,22 @@ export const ContextMenu = {
      * @param openState - Whether the menu is initially open. Defaults to true.
      */
     openMenu(content, position, openState = true) {
-        let pos;
-        if (position instanceof HTMLElement) {
+        let pos = { x: 0, y: 0 };
+        const type = Object.prototype.toString.call(position).slice(8, -1);
+        if (type === "PointerEvent") {
+            pos = {
+                x: position.clientX,
+                y: position.clientY,
+            };
+        }
+        else if (type.match(/HTML.*Element/)) {
             const rect = position.getBoundingClientRect();
             pos = {
                 x: rect.left,
                 y: rect.top,
             };
         }
-        else {
+        else if (type === "Object") {
             pos = {
                 x: position.x,
                 y: position.y,

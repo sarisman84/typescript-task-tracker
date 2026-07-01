@@ -7,6 +7,7 @@
 import {
   addTagToTask,
   deleteTask,
+  removeTagFromTask,
   type AddTagDesc,
   type Task,
 } from "../core/data management/task-data.js";
@@ -86,6 +87,20 @@ function drawTaskCardFooter(task: Task) {
       );
       element.textContent = tag.name;
       element.setAttribute("data-tag-color", tag.color);
+
+      element.events.onContextMenu((event: PointerEvent) => {
+        event.preventDefault();
+        const options: ContextMenuOption[] = [
+          {
+            label: "Delete Tag",
+            event: () => {
+              removeTagFromTask(task, tag.id); // Implement this function
+            },
+          },
+        ];
+        ContextMenu.openMenu(options, event);
+      });
+
       return element;
     });
 
