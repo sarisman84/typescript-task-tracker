@@ -59,6 +59,7 @@ function drawTaskCardFooter(task) {
             element.setAttribute("data-tag-color", tag.color);
             element.events.onContextMenu((event) => {
                 event.preventDefault();
+                event.stopPropagation();
                 const options = [
                     {
                         label: "Delete Tag",

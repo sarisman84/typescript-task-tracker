@@ -22,14 +22,16 @@ export function drawTaskList(list) {
     const ulEntry = htmlUtils.createElement("ul", "task-list__entry");
     const article = htmlUtils.createElement("article", "task-list", ["task-list"]);
     article.setAttribute("aria-labelledby", "list-name");
-    article.events.onContextMenu((event) => {
+    const header = htmlUtils.createElement("header", "task-list__header", ["task-list__header"]);
+    header.events.onContextMenu((event) => {
         event.preventDefault();
+        event.stopPropagation(); // Prevents the event from bubbling up to parent elements
         drawListContextMenu(list, event);
     });
-    const header = htmlUtils.createElement("header", "task-list__header", ["task-list__header"]);
     const contextMenu = htmlUtils.createElement("button", "task-list__context-menu", ["u-icon", "fa-ellipsis-vertical", "fa-solid"]);
     contextMenu.events.onClick((event) => {
         event.preventDefault();
+        event.stopPropagation();
         drawListContextMenu(list, contextMenu);
     });
     header.append(drawTitleForms(list), contextMenu);

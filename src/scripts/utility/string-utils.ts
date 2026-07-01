@@ -37,7 +37,7 @@ const stringUtils = {
       month: "short",
       day: "numeric",
     };
-    return date.toLocaleDateString(undefined, options);
+    return new Date(date).toLocaleDateString(undefined, options);
   },
 };
 export default stringUtils; // Export as default for easier import

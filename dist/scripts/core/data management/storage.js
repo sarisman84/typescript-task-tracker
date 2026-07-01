@@ -1,15 +1,9 @@
 const boundDataRegistry = {};
 const storageUtils = {
-    tryBindingData(key, obj) {
-        if (boundDataRegistry[key]) {
-            console.warn(`[Warn][Storage/tryBindingData]: Key ${key} is already bound, skipping binding.`);
-            return 409;
-        }
-        this.bindData(key, obj);
-        return 200;
-    },
-    bindData(key, obj) {
-        boundDataRegistry[key] = obj;
+    createBindingData(key, value) {
+        boundDataRegistry[key] ??= { value: value() };
+        console.log(`[Log][Storage/createBindingData]: Created binding data -> ${boundDataRegistry[key]}`);
+        return boundDataRegistry[key];
     },
     saveDataToStorage() {
         if (Object.keys(boundDataRegistry).length === 0) {
@@ -18,7 +12,7 @@ const storageUtils = {
         }
         console.log("[Log][Storage/saveDataToStorage]: Saving data to storage..."); // Debug log
         Object.keys(boundDataRegistry).forEach((key) => {
-            localStorage.setItem(key, JSON.stringify(boundDataRegistry[key]));
+            localStorage.setItem(key, JSON.stringify(boundDataRegistry[key]?.value));
         });
         console.log("[Log][Storage/saveDataToStorage]: Data saved to storage successfully."); // Debug log
         return 200; // OK
@@ -31,8 +25,10 @@ const storageUtils = {
         console.log("[Log][Storage/loadDataFromStorage]: Loading data from storage..."); // Debug log
         Object.keys(boundDataRegistry).forEach((key) => {
             const data = localStorage.getItem(key);
-            if (data) {
-                boundDataRegistry[key] = JSON.parse(data);
+            if (data && boundDataRegistry[key]) {
+                boundDataRegistry[key].value = JSON.parse(data);
+                console.log(`[Log][Storage/loadDataFromStorage]: Loaded data for ${key} to:`); // Debug log
+                console.table(boundDataRegistry[key]); // Debug log
             }
         });
         console.log("[Log][Storage/loadDataFromStorage]: Data loaded from storage successfully."); // Debug log

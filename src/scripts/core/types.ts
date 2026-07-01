@@ -43,6 +43,10 @@ export const UUID = {
   },
 };
 
+export interface Bindable<T> {
+  value: T;
+}
+
 /**
  * Type for HTML elements that may be null.
  */

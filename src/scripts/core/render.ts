@@ -6,7 +6,7 @@ import { drawTaskList } from "../components/task-list.js";
 import { htmlUtils } from "../utility/html/html-utils.js";
 import type { TaskList } from "./data management/list-data.js";
 import type { Task } from "./data management/task-data.js";
-import { app, taskLists, tasks } from "./runtime.js";
+import { app, pageRoot, runtime, taskLists, tasks } from "./runtime.js";
 
 /**
  * Renders all tasks and task lists into the application container.
@@ -23,9 +23,9 @@ export function refreshAppRender(): void {
   app.append(element);
 }
 export function renderTaskboard(): void {
-  taskLists.forEach((taskList: TaskList) => {
+  taskLists.value.forEach((taskList: TaskList) => {
     const taskListElement: HTMLElement = drawTaskList(taskList);
-    const relatedTasks: Task[] = tasks.filter(
+    const relatedTasks: Task[] = tasks.value.filter(
       (task) => task.listId === taskList.id,
     );
 

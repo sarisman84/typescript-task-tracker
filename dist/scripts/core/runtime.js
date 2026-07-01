@@ -4,8 +4,8 @@ import { refreshAppRender } from "./render.js";
 /**
  * Array to store all tasks.
  */
-export const tasks = [];
-export const taskLists = [];
+export const tasks = storageUtils.createBindingData("app/tasks", () => []);
+export const taskLists = storageUtils.createBindingData("app/taskLists", () => []);
 export const app = htmlUtils.getElementById("app");
 export const pageRoot = htmlUtils.getElementById("page-root");
 export const runtime = {

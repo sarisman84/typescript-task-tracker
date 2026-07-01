@@ -95,6 +95,7 @@ function drawTaskCardFooter(task: Task) {
 
       element.events.onContextMenu((event: PointerEvent) => {
         event.preventDefault();
+        event.stopPropagation();
         const options: ContextMenuOption[] = [
           {
             label: "Delete Tag",

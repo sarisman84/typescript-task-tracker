@@ -34,16 +34,19 @@ export function drawTaskList(list: TaskList): HTMLElement {
     ["task-list"],
   );
   article.setAttribute("aria-labelledby", "list-name");
-  article.events.onContextMenu((event: PointerEvent) => {
-    event.preventDefault();
-    drawListContextMenu(list, event);
-  });
+  
 
   const header: HTMLElement = htmlUtils.createElement(
     "header",
     "task-list__header",
     ["task-list__header"],
   );
+
+  header.events.onContextMenu((event: PointerEvent) => {
+    event.preventDefault();
+    event.stopPropagation(); // Prevents the event from bubbling up to parent elements
+    drawListContextMenu(list, event);
+  });
 
   const contextMenu: HTMLButtonElement = htmlUtils.createElement(
     "button",
@@ -52,6 +55,7 @@ export function drawTaskList(list: TaskList): HTMLElement {
   );
   contextMenu.events.onClick((event: PointerEvent) => {
     event.preventDefault();
+    event.stopPropagation();
     drawListContextMenu(list, contextMenu);
   });
   header.append(drawTitleForms(list), contextMenu);

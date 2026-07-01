@@ -17,15 +17,15 @@ export function createTask(listId) {
         createdAt: new Date(),
         editFlag: false,
     };
-    tasks.push(task);
+    tasks.value.push(task);
     console.log(`Task "${task.id}" created with ID: ${task.id} in list ID: ${task.listId}`);
 }
 export function deleteTask(taskId) {
-    const foundIndex = tasks.findIndex((task) => task.id === taskId);
+    const foundIndex = tasks.value.findIndex((task) => task.id === taskId);
     if (foundIndex === -1) {
         return;
     }
-    tasks.splice(foundIndex, 1); // Remove the task from the array
+    tasks.value.splice(foundIndex, 1); // Remove the task from the array
     console.log(`Task ${taskId} deleted successfully`);
 }
 export function addTagToTask(desc) {

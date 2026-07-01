@@ -1,7 +1,6 @@
-import type { Status } from "../types.js";
+import type { Bindable, Status } from "../types.js";
 declare const storageUtils: {
-    tryBindingData<TValue>(key: string, obj: TValue): Status;
-    bindData<TValue>(key: string, obj: TValue): void;
+    createBindingData<T>(key: string, value: () => T): Bindable<T>;
     saveDataToStorage(): Status;
     loadDataFromStorage(): Status;
     clearStorage(): void;

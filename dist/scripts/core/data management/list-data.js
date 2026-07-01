@@ -12,21 +12,21 @@ export function createTaskList(name = "") {
         name: name,
         createdAt: new Date(),
     };
-    taskLists.push(taskList);
+    taskLists.value.push(taskList);
     console.log(`Task list "${taskList.name}" created with ID: ${taskList.id}`);
     return taskList;
 }
 export function deleteTaskList(listId) {
-    const foundIndex = taskLists.findIndex((list) => list.id === listId);
+    const foundIndex = taskLists.value.findIndex((list) => list.id === listId);
     if (foundIndex === -1) {
         return;
     }
-    const deletedListItems = tasks
+    const deletedListItems = tasks.value
         .filter((task) => task.listId === listId)
         .map((task) => task.id);
     deletedListItems.forEach((id) => {
         deleteTask(id);
     });
-    taskLists.splice(foundIndex, 1); // Remove the task from the array
+    taskLists.value.splice(foundIndex, 1); // Remove the task from the array
 }
 //# sourceMappingURL=list-data.js.map

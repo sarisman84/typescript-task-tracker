@@ -1,20 +1,14 @@
-import type { Status } from "../types.js";
+import type { Bindable, Status } from "../types.js";
 
-const boundDataRegistry: { [id: string]: any } = {};
+const boundDataRegistry: { [id: string]: Bindable<any> } = {};
 
 const storageUtils = {
-  tryBindingData<TValue>(key: string, obj: TValue): Status {
-    if (boundDataRegistry[key]) {
-      console.warn(
-        `[Warn][Storage/tryBindingData]: Key ${key} is already bound, skipping binding.`,
-      );
-      return 409;
-    }
-    this.bindData(key, obj);
-    return 200;
-  },
-  bindData<TValue>(key: string, obj: TValue): void {
-    boundDataRegistry[key] = obj;
+  createBindingData<T>(key: string, value: () => T): Bindable<T> {
+    boundDataRegistry[key] ??= { value: value() };
+    console.log(
+      `[Log][Storage/createBindingData]: Created binding data -> ${boundDataRegistry[key]}`,
+    );
+    return boundDataRegistry[key];
   },
   saveDataToStorage(): Status {
     if (Object.keys(boundDataRegistry).length === 0) {
@@ -26,7 +20,7 @@ const storageUtils = {
     console.log("[Log][Storage/saveDataToStorage]: Saving data to storage..."); // Debug log
 
     Object.keys(boundDataRegistry).forEach((key: string) => {
-      localStorage.setItem(key, JSON.stringify(boundDataRegistry[key]));
+      localStorage.setItem(key, JSON.stringify(boundDataRegistry[key]?.value));
     });
 
     console.log(
@@ -48,8 +42,12 @@ const storageUtils = {
 
     Object.keys(boundDataRegistry).forEach((key: string) => {
       const data = localStorage.getItem(key);
-      if (data) {
-        boundDataRegistry[key] = JSON.parse(data);
+      if (data && boundDataRegistry[key]) {
+        boundDataRegistry[key].value = JSON.parse(data);
+        console.log(
+          `[Log][Storage/loadDataFromStorage]: Loaded data for ${key} to:`,
+        ); // Debug log
+        console.table(boundDataRegistry[key]); // Debug log
       }
     });
 

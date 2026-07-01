@@ -13,27 +13,7 @@ export const ContextMenu = {
      * @param openState - Whether the menu is initially open. Defaults to true.
      */
     openMenu(content, position, openState = true) {
-        let pos = { x: 0, y: 0 };
-        const type = Object.prototype.toString.call(position).slice(8, -1);
-        if (type === "PointerEvent") {
-            pos = {
-                x: position.clientX,
-                y: position.clientY,
-            };
-        }
-        else if (type.match(/HTML.*Element/)) {
-            const rect = position.getBoundingClientRect();
-            pos = {
-                x: rect.left,
-                y: rect.top,
-            };
-        }
-        else if (type === "Object") {
-            pos = {
-                x: position.x,
-                y: position.y,
-            };
-        }
+        const pos = parsePositionAndElementIdData(position);
         currentInstructions = {
             content,
             position: pos,
@@ -48,12 +28,52 @@ export const ContextMenu = {
      */
     closeMenu() {
         currentInstructions.openState = false;
+        runtime.refreshAppRender();
     },
 };
+function parsePositionAndElementIdData(data) {
+    let pos = { x: 0, y: 0 };
+    const type = Object.prototype.toString.call(data).slice(8, -1);
+    console.log(`${type} is ${type.match(/HTML\w*Element/) ? "a HTMLElement" : "not a HTMLElement"}`);
+    if (type === "PointerEvent") {
+        const event = data;
+        pos = {
+            x: event.clientX,
+            y: event.clientY,
+        };
+    }
+    else if (type.match(/HTML\w*Element/)) {
+        const element = data;
+        if (!element) {
+            console.error(`[Log][ContextMenu/parsePositionAndElementIdData]: confirmed HTMLElement is null or undefined: ${element} `);
+            return pos;
+        }
+        const rect = element.getBoundingClientRect();
+        pos = {
+            x: rect.left,
+            y: rect.top,
+        };
+        console.log(rect.left);
+    }
+    else if (type === "Object") {
+        pos = data;
+    }
+    return pos;
+}
 /**
  * Renders the context menu into the application root element based on current instructions.
  */
 export function renderContextMenu() {
+    function closeMenu(event) {
+        if (currentInstructions.cooldown >= Date.now() ||
+            !currentInstructions.openState ||
+            menu.getAttribute("data-state") === "close") {
+            return;
+        }
+        currentInstructions.openState = false;
+        runtime.refreshAppRender();
+        console.log(`[Log][ContextMenu/renderContextMenu/appClick]: Closing context menu due to click outside.`);
+    }
     if (!app) {
         console.error(`[Error][ContextMenu/renderContextMenu]: App root element not found. Cannot render context menu.`);
         return;
@@ -90,16 +110,8 @@ export function renderContextMenu() {
         menu.style.top = `${position.y}px`;
         menu.setAttribute("data-state", currentInstructions.openState ? "open" : "close");
     }
-    pageRoot?.events.onClick((event) => {
-        if (currentInstructions.cooldown >= Date.now() ||
-            !currentInstructions.openState ||
-            menu.getAttribute("data-state") === "close") {
-            return;
-        }
-        currentInstructions.openState = false;
-        runtime.refreshAppRender();
-        console.log(`[Log][ContextMenu/renderContextMenu/appClick]: Closing context menu due to click outside.`);
-    });
+    pageRoot?.events.onClick(closeMenu);
+    pageRoot?.events.onContextMenu(closeMenu);
     app.append(menu);
 }
 function startTimer() {

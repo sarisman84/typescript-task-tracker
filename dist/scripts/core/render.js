@@ -4,7 +4,7 @@ import { drawNewTaskButton } from "../components/new-task-button.js";
 import { drawTaskCard } from "../components/task-card.js";
 import { drawTaskList } from "../components/task-list.js";
 import { htmlUtils } from "../utility/html/html-utils.js";
-import { app, taskLists, tasks } from "./runtime.js";
+import { app, pageRoot, runtime, taskLists, tasks } from "./runtime.js";
 /**
  * Renders all tasks and task lists into the application container.
  */
@@ -19,9 +19,9 @@ export function refreshAppRender() {
     app.append(element);
 }
 export function renderTaskboard() {
-    taskLists.forEach((taskList) => {
+    taskLists.value.forEach((taskList) => {
         const taskListElement = drawTaskList(taskList);
-        const relatedTasks = tasks.filter((task) => task.listId === taskList.id);
+        const relatedTasks = tasks.value.filter((task) => task.listId === taskList.id);
         relatedTasks.forEach((task) => {
             // renderRelatedTask(task, taskListElement);
             const liElement = htmlUtils.createElement("li", "task-entry");

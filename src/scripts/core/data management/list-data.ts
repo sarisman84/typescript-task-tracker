@@ -23,20 +23,20 @@ export function createTaskList(name: string = ""): TaskList {
     name: name,
     createdAt: new Date(),
   };
-  taskLists.push(taskList);
+  taskLists.value.push(taskList);
   console.log(`Task list "${taskList.name}" created with ID: ${taskList.id}`);
 
   return taskList;
 }
 
 export function deleteTaskList(listId: string): void {
-  const foundIndex = taskLists.findIndex((list) => list.id === listId);
+  const foundIndex = taskLists.value.findIndex((list) => list.id === listId);
 
   if (foundIndex === -1) {
     return;
   }
 
-  const deletedListItems: UUID[] = tasks
+  const deletedListItems: UUID[] = tasks.value
     .filter((task) => task.listId === listId)
     .map((task) => task.id);
 
@@ -44,5 +44,5 @@ export function deleteTaskList(listId: string): void {
     deleteTask(id);
   });
 
-  taskLists.splice(foundIndex, 1); // Remove the task from the array
+  taskLists.value.splice(foundIndex, 1); // Remove the task from the array
 }

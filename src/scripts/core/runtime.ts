@@ -3,12 +3,19 @@ import type { TaskList } from "./data management/list-data.js";
 import storageUtils from "./data management/storage.js";
 import type { Task } from "./data management/task-data.js";
 import { refreshAppRender } from "./render.js";
+import type { Bindable } from "./types.js";
 
 /**
  * Array to store all tasks.
  */
-export const tasks: Task[] = [];
-export const taskLists: TaskList[] = [];
+export const tasks: Bindable<Task[]> = storageUtils.createBindingData(
+  "app/tasks",
+  () => [] as Task[],
+);
+export const taskLists: Bindable<TaskList[]> = storageUtils.createBindingData(
+  "app/taskLists",
+  () => [] as TaskList[],
+);
 export const app: HTMLDivElement | null = htmlUtils.getElementById("app");
 export const pageRoot: HTMLElement | null =
   htmlUtils.getElementById("page-root");
