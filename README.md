@@ -31,3 +31,5 @@ Dag 8: [Events & Interaktion](https://github.com/Lexicon-Utbildning-Front-end-20
 Dag 9: [Formulär och validering](https://github.com/Lexicon-Utbildning-Front-end-2026/typescript-dag9-ovning)
 
 Dag 10: [LocalStorage & JSON](https://github.com/Lexicon-Utbildning-Front-end-2026/typescript-dag10-localstorage-json)
+
+Dag 11: [Moduler, export/import](https://github.com/Lexicon-Utbildning-Front-end-2026/typescript-dag11-moduler)
