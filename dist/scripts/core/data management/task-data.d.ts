@@ -1,4 +1,4 @@
-import { UUID, type Color, type Tag } from "../data.js";
+import { UUID, type Color, type Tag } from "../types.js";
 export {};
 /**
  * Represents a single task.
@@ -19,13 +19,12 @@ export type Task = {
  * @param status - The status of the task (default is "pending").
  */
 export declare function createTask(listId: UUID): void;
-export declare function deleteTask(taskId: UUID, updateRender?: boolean): void;
+export declare function deleteTask(taskId: UUID): void;
 export interface AddTagDesc {
     task: Task;
     value: string;
     color: Color;
-    updateRender?: boolean;
 }
 export declare function addTagToTask(desc: AddTagDesc): void;
-export declare function removeTagFromTask(task: Task, tagId: UUID, updateRender?: boolean): void;
+export declare function removeTagFromTask(task: Task, tagId: UUID): void;
 //# sourceMappingURL=task-data.d.ts.map

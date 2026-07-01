@@ -1,18 +1,3 @@
-export {};
-/**
- * Represents the state and content of a context menu.
- */
-export interface ContextMenu {
-    /** The content to display in the menu, either an array of options or a custom HTMLElement. */
-    content: ContextMenuOption[] | HTMLElement | undefined;
-    /** The position where the menu should be displayed. */
-    position: {
-        x: number;
-        y: number;
-    };
-    /** Whether the menu is currently open. */
-    openState: boolean;
-}
 /**
  * Represents a single option in a context menu.
  */

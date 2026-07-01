@@ -10,8 +10,8 @@ import {
   type AddTagDesc,
   type Task,
 } from "../core/data management/task-data.js";
-import type { Tag } from "../core/data.js";
-import { renderApp } from "../core/render.js";
+import type { Color, Tag } from "../core/types.js";
+import { runtime } from "../core/runtime.js";
 import { htmlUtils } from "../utility/html/html-utils.js";
 import stringUtils from "../utility/string-utils.js";
 import { ContextMenu, type ContextMenuOption } from "./context-menu.js";
@@ -40,11 +40,13 @@ export type DrawTaskCardDesc = {
 export function drawTaskCard(task: Task): HTMLFormElement {
   const { id } = task;
 
-  const card: HTMLFormElement = htmlUtils.createElement("form", ["card"]);
-  card.id = card.name = `card_${id}`;
+  const card: HTMLFormElement = htmlUtils.createElement("form", `card_${id}`, [
+    "card",
+  ]);
+  card.name = card.id;
   card.events.onSubmit((event) => {
     event.preventDefault();
-    renderApp();
+    runtime.saveDataAndRefreshAppRenderer();
   });
 
   // Create card header and its related elements.
@@ -70,30 +72,39 @@ export function drawTaskCard(task: Task): HTMLFormElement {
  * @returns A footer element containing the tag spans.
  */
 function drawTaskCardFooter(task: Task) {
-  const footer: HTMLElement = htmlUtils.createElement("footer", [
-    "card__footer",
-  ]);
+  const footer: HTMLElement = htmlUtils.createElement(
+    "footer",
+    "task-card__footer",
+    ["card__footer"],
+  );
   {
     const tagElements = task.tags.map((tag: Tag, index: number) => {
-      const element: HTMLSpanElement = htmlUtils.createElement("span", [
-        "card__tag",
-      ]);
-      element.id = `card__tag-${index}`; // Use index as ID for simplicity
+      const element: HTMLSpanElement = htmlUtils.createElement(
+        "span",
+        `card__tag-${index}`,
+        ["card__tag"],
+      );
       element.textContent = tag.name;
       element.setAttribute("data-tag-color", tag.color);
       return element;
     });
 
-    const createTagButton = htmlUtils.createElement("button", [
-      "u-button",
-      "u-button--create",
-    ]);
-    createTagButton.id = "card__tag--create-button";
-    createTagButton.textContent = "+";
+    const createTagButton = htmlUtils.createElement(
+      "button",
+      "task-card__tag--create-button",
+      ["u-icon", "fa-ellipsis-vertical", "fa-solid"],
+    );
+
     createTagButton.events.onClick((event: PointerEvent) => {
       event.preventDefault();
+
       const tags = getAvailableTags(task);
       ContextMenu.openMenu(tags, createTagButton);
+      console.log(
+        `[Log][TaskCard/drawTaskCardFooter/createTagButton]: Opened context menu for task ${task.id} with tags: ${tags.map(
+          (tag) => tag.label,
+        )}`,
+      );
     });
 
     footer.append(...tagElements, createTagButton);
@@ -111,44 +122,43 @@ function drawTaskCardFooter(task: Task) {
  * @returns A body div element containing the label and textarea.
  */
 function drawTaskCardBody(task: Task) {
-  const body: HTMLElement = htmlUtils.createForm(["card__body"]);
+  const body: HTMLElement = htmlUtils.createForm("task-card__content", [
+    "card__body",
+  ]);
   {
-    const label: HTMLLabelElement = htmlUtils.createElement("label", [
-      "sc-only",
-    ]);
-    label.id = "task-card__label";
-    label.textContent = "Description";
+    const textArea: HTMLTextAreaElement = drawContentTextArea(task, body);
 
-    const textArea: HTMLTextAreaElement = htmlUtils.createElement("textarea", [
-      "card__content",
-    ]);
+    // Add event listeners to handle saving the description on submit, keydown, and mouse leave events.
+    registerBodyEventListeners(body, task, textArea);
+  }
+  return body;
+}
 
+function drawContentTextArea(task: Task, body: HTMLElement) {
+  const label: HTMLLabelElement = htmlUtils.createElement(
+    "label",
+    "task-card__label",
+    ["sc-only"],
+  );
+  label.textContent = "Description";
+
+  const textArea: HTMLTextAreaElement = htmlUtils.createElement(
+    "textarea",
+    "task-card__description",
+    ["card__content"],
+  );
+
+  // Set attributes and initial value for the textarea
+  {
     textArea.id = "card__content";
     textArea.placeholder = "Describe your task...";
     textArea.value = task.description;
     textArea.rows = 5;
 
     label.setAttribute("for", "card__content");
-
     body.append(label, textArea);
-    body.events.onSubmit((event: SubmitEvent) => {
-      event.preventDefault();
-      task.description = textArea.value;
-    });
-
-    body.events.onKeyDown((event: KeyboardEvent) => {
-      if (event.shiftKey || event.key != "Enter") {
-        return;
-      }
-      task.description = textArea.value;
-      textArea.blur();
-    });
-
-    body.events.onMouseLeave(() => {
-      task.description = textArea.value;
-    });
   }
-  return body;
+  return textArea;
 }
 
 /**
@@ -161,27 +171,31 @@ function drawTaskCardBody(task: Task) {
  * @returns A header element containing the date and context menu.
  */
 function drawTaskCardHeader(task: Task) {
-  const header: HTMLElement = htmlUtils.createElement("header", [
-    "card__header",
-  ]);
+  const header: HTMLElement = htmlUtils.createElement(
+    "header",
+    "task-card__header",
+    ["card__header"],
+  );
   {
     header.id = "card__header";
 
-    const dateElement: HTMLParagraphElement = htmlUtils.createElement("p", [
-      "card__date",
-    ]);
-    dateElement.id = "card__date";
+    const dateElement: HTMLParagraphElement = htmlUtils.createElement(
+      "p",
+      "task-card__date",
+      ["card__date"],
+    );
     dateElement.textContent = stringUtils.formatDate(task.createdAt);
 
-    const deleteButton: HTMLButtonElement = htmlUtils.createElement("button", [
-      "u-button",
-      "u-button--delete",
-    ]);
+    const deleteButton: HTMLButtonElement = htmlUtils.createElement(
+      "button",
+      "task-card__delete-button",
+      ["u-button", "u-button--delete"],
+    );
     deleteButton.textContent = "Delete";
-    deleteButton.id = "card__delete-button";
 
     deleteButton.events.onClick(() => {
       deleteTask(task.id);
+      runtime.saveDataAndRefreshAppRenderer();
     });
 
     header.append(dateElement, deleteButton);
@@ -189,28 +203,59 @@ function drawTaskCardHeader(task: Task) {
   return header;
 }
 
+function registerBodyEventListeners(
+  body: HTMLElement,
+  task: Task,
+  textArea: HTMLTextAreaElement,
+) {
+  {
+    body.events.onSubmit((event: SubmitEvent) => {
+      event.preventDefault();
+      task.description = textArea.value;
+      runtime.saveDataAndRefreshAppRenderer();
+    });
+
+    body.events.onKeyDown((event: KeyboardEvent) => {
+      if (event.shiftKey || event.key != "Enter") {
+        return;
+      }
+      task.description = textArea.value;
+      textArea.blur();
+      runtime.saveDataAndRefreshAppRenderer();
+    });
+
+    body.events.onMouseLeave(() => {
+      if (task.description === textArea.value) {
+        return;
+      }
+
+      task.description = textArea.value;
+      runtime.saveDataAndRefreshAppRenderer();
+    });
+  }
+}
+
 function getAvailableTags(task: Task): ContextMenuOption[] {
   console.log(
     `[Log][TaskCard/getAvailableTags]: Fetching available tags for task ${task.id}...`,
   );
+  function optionEvent(label: string, color: Color): ContextMenuOption {
+    const result = {
+      label,
+      event: () => {
+        console.log(
+          `[Log][TaskCard/getAvailableTags/optionEvent]: Adding tag "${label}" to task ${task.id}...`,
+        );
+        addTagToTask({ task, value: label, color });
+        runtime.saveDataAndRefreshAppRenderer();
+      },
+    };
+    return result;
+  }
+
   return [
-    {
-      label: "Pending",
-      event: () => {
-        addTagToTask({ task, value: "Pending", color: "green" });
-      },
-    },
-    {
-      label: "In-progress",
-      event: () => {
-        addTagToTask({ task, value: "In-progress", color: "yellow" });
-      },
-    },
-    {
-      label: "Completed",
-      event: () => {
-        addTagToTask({ task, value: "Completed", color: "black" });
-      },
-    },
+    optionEvent("Pending", "red"),
+    optionEvent("In Progress", "blue"),
+    optionEvent("Completed", "green"),
   ];
 }

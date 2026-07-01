@@ -1,19 +1,18 @@
-import { app, UUID } from "../core/data.js";
-import { renderApp } from "../core/render.js";
+import { UUID } from "../core/types.js";
+import { app, runtime } from "../core/runtime.js";
 import { htmlUtils } from "../utility/html/html-utils.js";
-
-export {};
 
 /**
  * Represents the state and content of a context menu.
  */
-export interface ContextMenu {
+interface ContextMenu {
   /** The content to display in the menu, either an array of options or a custom HTMLElement. */
   content: ContextMenuOption[] | HTMLElement | undefined;
   /** The position where the menu should be displayed. */
   position: { x: number; y: number };
   /** Whether the menu is currently open. */
   openState: boolean;
+  cooldown: number; // A cooldown timer to prevent rapid toggling of the menu
 }
 
 /**
@@ -59,12 +58,13 @@ export const ContextMenu = {
       content,
       position: pos,
       openState,
+      cooldown: startTimer(),
     };
 
     console.log(
       `[Log][ContextMenu/openMenu]: Opening context menu at ${pos.x}, ${pos.y} with content: ${content}`,
     );
-    renderApp();
+    runtime.refreshAppRender();
   },
 
   /**
@@ -79,6 +79,12 @@ export const ContextMenu = {
  * Renders the context menu into the application root element based on current instructions.
  */
 export function renderContextMenu(): void {
+  if (!app) {
+    console.error(
+      `[Error][ContextMenu/renderContextMenu]: App root element not found. Cannot render context menu.`,
+    );
+    return;
+  }
   if (currentInstructions.content === undefined) {
     console.warn(
       `[Warn][ContextMenu/renderContextMenu]: No content to render in context menu. Skipping!`,
@@ -88,7 +94,7 @@ export function renderContextMenu(): void {
 
   const { content, position, openState } = currentInstructions;
 
-  const menu: HTMLUListElement = htmlUtils.createElement("ul", [
+  const menu: HTMLUListElement = htmlUtils.createElement("ul", "context-menu", [
     "context-menu",
   ]);
   {
@@ -97,18 +103,22 @@ export function renderContextMenu(): void {
     } else {
       const options: ContextMenuOption[] = content as ContextMenuOption[];
       options.forEach((entry) => {
-        const listEntry: HTMLLIElement = htmlUtils.createElement("li", [
+        const listEntry: HTMLLIElement = htmlUtils.createElement(
+          "li",
           "context-menu__link",
-        ]);
+          ["context-menu__link"],
+        );
         listEntry.events.onClick(() => {
           if (!entry.event()) {
             currentInstructions.openState = false;
-            renderApp();
+            runtime.refreshAppRender();
           }
         });
-        const link: HTMLElement = htmlUtils.createElement("span", [
+        const link: HTMLElement = htmlUtils.createElement(
+          "span",
           "context-menu__label",
-        ]);
+          ["context-menu__label"],
+        );
         link.textContent = entry.label;
 
         listEntry.append(link);
@@ -124,13 +134,32 @@ export function renderContextMenu(): void {
       currentInstructions.openState ? "open" : "close",
     );
   }
+  app.events.onClick((event: PointerEvent) => {
+    if (
+      currentInstructions.cooldown >= Date.now() ||
+      !currentInstructions.openState ||
+      menu.getAttribute("data-state") === "close"
+    ) {
+      return;
+    }
+
+    currentInstructions.openState = false;
+    runtime.refreshAppRender();
+    console.log(
+      `[Log][ContextMenu/renderContextMenu/appClick]: Closing context menu due to click outside.`,
+    );
+  });
 
   app.append(menu);
+}
+
+function startTimer(): number {
+  return Date.now() + 50; // 1 second cooldown
 }
 
 let currentInstructions: ContextMenu = {
   content: undefined,
   position: { x: 0, y: 0 },
   openState: false,
+  cooldown: 0,
 };
-

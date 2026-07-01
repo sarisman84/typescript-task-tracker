@@ -18,4 +18,6 @@ export declare const UUID: {
  * Type for HTML elements that may be null.
  */
 export type HTMLElementOrNull = HTMLLIElement | HTMLDivElement | null;
-//# sourceMappingURL=data.d.ts.map
+export type Status = 200 | 201 | 204 | 301 | 302 | 400 | 401 | 403 | 404 | 409 | 422 | 500 | 502 | 503 | 504;
+export declare const STATUS_MESSAGES: Record<Status, string>;
+//# sourceMappingURL=types.d.ts.map

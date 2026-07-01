@@ -1,5 +1,5 @@
-import { UUID, tasks } from "../data.js";
-import { renderApp } from "../render.js";
+import { UUID } from "../types.js";
+import { tasks } from "../runtime.js";
 export {};
 /**
  * Creates a new task with the specified details.
@@ -19,36 +19,26 @@ export function createTask(listId) {
     };
     tasks.push(task);
     console.log(`Task "${task.id}" created with ID: ${task.id} in list ID: ${task.listId}`);
-    renderApp();
 }
-export function deleteTask(taskId, updateRender = true) {
+export function deleteTask(taskId) {
     const foundIndex = tasks.findIndex((task) => task.id === taskId);
     if (foundIndex === -1) {
         return;
     }
     tasks.splice(foundIndex, 1); // Remove the task from the array
-    if (updateRender) {
-        renderApp(); // Re-render the app
-    }
     console.log(`Task ${taskId} deleted successfully`);
 }
 export function addTagToTask(desc) {
     const tag = { name: desc.value, color: desc.color, id: UUID.new() };
     desc.task.tags.push(tag);
-    if (desc.updateRender) {
-        renderApp(); // Re-render the app
-    }
     console.log(`[Log][Task/${desc.task.id}]: Added tag ${tag.id}/${tag.name}!`);
 }
-export function removeTagFromTask(task, tagId, updateRender = true) {
+export function removeTagFromTask(task, tagId) {
     const index = task.tags.findIndex((tag) => tag.id === tagId);
     if (index === -1) {
         return;
     }
     task.tags.splice(index, 1);
-    if (updateRender) {
-        renderApp(); // Re-render the app
-    }
     console.log(`[Log][Task/${task.id}]: Removed tag ${tagId}!`);
 }
 //# sourceMappingURL=task-data.js.map

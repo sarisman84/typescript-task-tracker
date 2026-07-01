@@ -8,25 +8,32 @@ export const htmlUtils = {
      * @param classList - An optional array of CSS class names to apply to the element.
      * @returns The newly created HTMLElement, cast to the specified type T.
      */
-    createElement(type, classList = []) {
+    createElement(type, id, classList = []) {
         const element = document.createElement(type);
-        if (!element) {
-            throw new Error(`Failed to create element of type ${type}`);
-        }
+        if (id)
+            element.id = id; // Set the ID if provided
         if (classList && classList.length > 0) {
-            element.classList.add(...classList); // Add all classes to the element
+            const normalClasses = classList.filter((cls) => !cls.startsWith("fa-"));
+            element.classList.add(...normalClasses); // Add all classes to the element
+            const fontAwesomeClasses = classList.filter((cls) => cls.startsWith("fa-"));
+            if (fontAwesomeClasses.length > 0) {
+                const iconElement = document.createElement("i");
+                iconElement.id = `${id}-icon`;
+                iconElement.classList.add(...fontAwesomeClasses); // Add all FA classes to the icon element
+                element.append(iconElement); // Append the icon element to the main element
+            }
         }
         registerEventListeners(element);
         return element;
     },
-    createForm(classList = []) {
-        return this.createElement("form", classList);
+    createForm(id, classList = []) {
+        return this.createElement("form", id, classList);
     },
-    createInput(classList = []) {
-        return this.createElement("input", classList);
+    createInput(id, classList = []) {
+        return this.createElement("input", id, classList);
     },
-    createLabel(classList = []) {
-        return this.createElement("label", classList);
+    createLabel(id, classList = []) {
+        return this.createElement("label", id, classList);
     },
     /**
      * Creates a dropdown (select) element with the given options and change handler.
@@ -57,43 +64,14 @@ export const htmlUtils = {
         });
         return select;
     },
-    createContextMenu(options, id = "", classList) {
-        const menu = htmlUtils.createElement("ul", [
-            "context-menu",
-            ...classList.menu,
-        ]);
-        {
-            const liElements = options.map((option) => {
-                const element = htmlUtils.createElement("li");
-                const button = htmlUtils.createElement("button", [
-                    "context-menu__option-button",
-                    ...classList.options,
-                ]);
-                element.id = stringUtils.toLower(option.name);
-                button.id = "context-menu__menu__option-button";
-                button.addEventListener("click", () => {
-                    option.selectEvent();
-                    menu.setAttribute("data-state", "close");
-                });
-                element.append(button);
-                return element;
-            });
-            menu.append(...liElements);
-            const button = htmlUtils.createElement("button", [
-                "context-menu__button",
-                ...classList.button,
-            ]);
-            {
-                button.id = stringUtils.isStringNullOrEmpty(id)
-                    ? "context-menu__button"
-                    : id;
-                button.addEventListener("click", () => {
-                    menu.setAttribute("data-state", "open");
-                });
-                button.append(menu);
-            }
-            return button;
+    getElementById(id) {
+        const element = document.getElementById(id);
+        if (!element) {
+            console.error(`[Error][htmlUtils.getElementById]: No element found with ID "${id}"`);
+            return null;
         }
+        registerEventListeners(element);
+        return element;
     },
 };
 /**

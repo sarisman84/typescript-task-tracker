@@ -6,29 +6,23 @@ import { drawTaskList } from "../components/task-list.js";
 import { htmlUtils } from "../utility/html/html-utils.js";
 import type { TaskList } from "./data management/list-data.js";
 import type { Task } from "./data management/task-data.js";
-import { app, taskLists, tasks } from "./data.js";
-
-export function renderEmptyState(fullClear: boolean = false): void {
-  if (fullClear) {
-    app.innerHTML = "";
-  }
-  const element = drawNewListButton();
-  app.append(element);
-}
+import { app, taskLists, tasks } from "./runtime.js";
 
 /**
  * Renders all tasks and task lists into the application container.
  */
-export function renderApp(): void {
+export function refreshAppRender(): void {
+  if (!app) {
+    throw new Error("Application container not found");
+  }
   app.innerHTML = ""; // Clear the app container before rendering
   renderContextMenu();
   renderTaskboard();
 
   const element = drawNewListButton();
-
   app.append(element);
 }
-function renderTaskboard(): void {
+export function renderTaskboard(): void {
   taskLists.forEach((taskList: TaskList) => {
     const taskListElement: HTMLElement = drawTaskList(taskList);
     const relatedTasks: Task[] = tasks.filter(
@@ -37,7 +31,10 @@ function renderTaskboard(): void {
 
     relatedTasks.forEach((task: Task) => {
       // renderRelatedTask(task, taskListElement);
-      const liElement: HTMLLIElement = htmlUtils.createElement("li", []);
+      const liElement: HTMLLIElement = htmlUtils.createElement(
+        "li",
+        "task-entry",
+      );
       const card: HTMLFormElement = drawTaskCard(task);
 
       liElement.append(card);

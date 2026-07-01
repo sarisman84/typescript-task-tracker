@@ -146,6 +146,9 @@ img {
   border-radius: 0.5ch;
 }
 
+.u-button:hover {
+  cursor: pointer;
+}
 .u-button--delete {
   background-color: var(--delete-500);
 }
@@ -173,6 +176,16 @@ img {
 
 .u-transparent {
   background-color: transparent;
+}
+
+.u-icon {
+  background-color: transparent;
+  border-color: transparent;
+}
+
+.u-icon:hover {
+  cursor: pointer;
+  color: var(--accent-500);
 }
 
 /* ==========================================

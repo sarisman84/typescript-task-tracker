@@ -2,8 +2,8 @@ import {
   deleteTaskList,
   type TaskList,
 } from "../core/data management/list-data.js";
-import { app } from "../core/data.js";
-import { renderApp } from "../core/render.js";
+
+import { app, runtime } from "../core/runtime.js";
 import { htmlUtils } from "../utility/html/html-utils.js";
 import stringUtils from "../utility/string-utils.js";
 
@@ -19,25 +19,41 @@ import stringUtils from "../utility/string-utils.js";
  * @returns A populated `<ul>` element containing the rendered task list
  */
 export function drawTaskList(list: TaskList): HTMLElement {
-  const ulEntry: HTMLUListElement = htmlUtils.createElement("ul");
-  const article: HTMLDivElement = htmlUtils.createElement("article", [
+  if (!app) {
+    console.error(`[Error]: App container not found. Cannot render task list.`);
+    return document.createElement("div"); // Return an empty div to avoid further errors
+  }
+  const ulEntry: HTMLUListElement = htmlUtils.createElement(
+    "ul",
+    "task-list__entry",
+  );
+  const article: HTMLDivElement = htmlUtils.createElement(
+    "article",
     "task-list",
-  ]);
+    ["task-list"],
+  );
   article.setAttribute("aria-labelledby", "list-name");
 
-  const header: HTMLElement = htmlUtils.createElement("header", [
+  const header: HTMLElement = htmlUtils.createElement(
+    "header",
     "task-list__header",
-  ]);
+    ["task-list__header"],
+  );
 
-  const deleteButton: HTMLButtonElement = htmlUtils.createElement("button", [
-    "u-button",
-    "u-button--delete",
-  ]) as HTMLButtonElement;
-  deleteButton.textContent = "Delete";
-  deleteButton.events.onClick(() => {
-    deleteTaskList(list.id);
-  });
-  header.append(drawTitleForms(list), deleteButton);
+  const deleteButton: HTMLButtonElement = htmlUtils.createElement(
+    "button",
+    "task-list__delete-button",
+    ["u-button", "u-button--delete"],
+  ) as HTMLButtonElement;
+  {
+    deleteButton.textContent = "Delete";
+    deleteButton.events.onClick(() => {
+      deleteTaskList(list.id);
+      runtime.saveDataAndRefreshAppRenderer();
+    });
+    header.append(drawTitleForms(list), deleteButton);
+  }
+
   article.append(header);
 
   ulEntry.append(article);
@@ -57,15 +73,19 @@ export function drawTaskList(list: TaskList): HTMLElement {
 function drawTitleForms(list: TaskList): HTMLFormElement {
   const titleForms: HTMLFormElement = htmlUtils.createElement("form");
   {
-    const label: HTMLLabelElement = htmlUtils.createElement("label", [
-      "sc-only",
-    ]);
+    const label: HTMLLabelElement = htmlUtils.createElement(
+      "label",
+      "task-list__title-label",
+      ["sc-only"],
+    );
     label.textContent = "List Name";
     label.setAttribute("for", "list-name");
 
-    const titleInput: HTMLInputElement = htmlUtils.createElement("input", [
+    const titleInput: HTMLInputElement = htmlUtils.createElement(
+      "input",
       "task-list__title",
-    ]);
+      ["task-list__title"],
+    );
     titleInput.type = "text";
     titleInput.id = titleInput.name = "list-name";
     titleInput.value = list.name;
@@ -87,10 +107,13 @@ function drawTitleForms(list: TaskList): HTMLFormElement {
 
 function updateListName(titleInput: HTMLInputElement, list: TaskList) {
   const trueValue: string = titleInput.value.trim();
-  if (stringUtils.isStringNullOrEmpty(trueValue)) {
+  if (
+    stringUtils.isStringNullOrEmpty(trueValue) ||
+    titleInput.value === list.name
+  ) {
     return;
   }
   list.name = titleInput.value;
-  renderApp();
+  runtime.saveDataAndRefreshAppRenderer();
   console.log(`[Log][List/${list.id}]: Name Updated to ${list.name}`);
 }

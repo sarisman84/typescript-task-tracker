@@ -1,5 +1,5 @@
-import { taskLists, UUID, tasks } from "../data.js";
-import { renderApp } from "../render.js";
+import { UUID } from "../types.js";
+import { taskLists, tasks } from "../runtime.js";
 import { deleteTask } from "./task-data.js";
 
 export {};
@@ -17,24 +17,19 @@ export type TaskList = {
  * Creates a new task list with the specified name.
  * @param name - The name of the task list to create.
  */
-export function createTaskList(): TaskList {
+export function createTaskList(name: string = ""): TaskList {
   const taskList: TaskList = {
     id: crypto.randomUUID(),
-    name: "",
+    name: name,
     createdAt: new Date(),
   };
   taskLists.push(taskList);
   console.log(`Task list "${taskList.name}" created with ID: ${taskList.id}`);
 
-  renderApp();
-
   return taskList;
 }
 
-export function deleteTaskList(
-  listId: string,
-  updateRender: boolean = true,
-): void {
+export function deleteTaskList(listId: string): void {
   const foundIndex = taskLists.findIndex((list) => list.id === listId);
 
   if (foundIndex === -1) {
@@ -46,11 +41,8 @@ export function deleteTaskList(
     .map((task) => task.id);
 
   deletedListItems.forEach((id) => {
-    deleteTask(id, false);
+    deleteTask(id);
   });
 
   taskLists.splice(foundIndex, 1); // Remove the task from the array
-  if (updateRender) {
-    renderApp();
-  }
 }

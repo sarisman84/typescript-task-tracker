@@ -1,5 +1,4 @@
 import type { HTMLTag } from "./html-tag.js";
-import type { HTMLContextMenuOption } from "./custom types/html-context-menu.js";
 export {};
 type AddEventListener<K extends keyof HTMLElementEventMap> = (callback: (event: HTMLElementEventMap[K]) => void) => void;
 type Vector2 = {
@@ -58,10 +57,10 @@ export declare const htmlUtils: {
      * @param classList - An optional array of CSS class names to apply to the element.
      * @returns The newly created HTMLElement, cast to the specified type T.
      */
-    createElement<T extends HTMLElement>(type: HTMLTag, classList?: string[]): T;
-    createForm(classList?: string[]): HTMLElement;
-    createInput(classList?: string[]): HTMLInputElement;
-    createLabel(classList?: string[]): HTMLLabelElement;
+    createElement<T extends HTMLElement>(type: HTMLTag, id?: string, classList?: string[]): T;
+    createForm(id?: string, classList?: string[]): HTMLElement;
+    createInput(id?: string, classList?: string[]): HTMLInputElement;
+    createLabel(id?: string, classList?: string[]): HTMLLabelElement;
     /**
      * Creates a dropdown (select) element with the given options and change handler.
      *
@@ -72,10 +71,6 @@ export declare const htmlUtils: {
      * @returns The newly created HTMLSelectElement with the specified options and change listener.
      */
     createDropdown(classList: string[] | undefined, options: string[], selectedValue: string | undefined, onChange: (value: string) => void): HTMLSelectElement;
-    createContextMenu(options: HTMLContextMenuOption[], id: string | undefined, classList: {
-        button: string[];
-        menu: string[];
-        options: string[];
-    }): HTMLButtonElement;
+    getElementById<TElement extends HTMLElement>(id: string): TElement | null;
 };
 //# sourceMappingURL=html-utils.d.ts.map

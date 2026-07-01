@@ -1,6 +1,6 @@
-export declare function renderEmptyState(fullClear?: boolean): void;
 /**
  * Renders all tasks and task lists into the application container.
  */
-export declare function renderApp(): void;
+export declare function refreshAppRender(): void;
+export declare function renderTaskboard(): void;
 //# sourceMappingURL=render.d.ts.map

@@ -1,3 +1,4 @@
+import { htmlUtils } from "../utility/html/html-utils.js";
 import stringUtils from "../utility/string-utils.js";
 import type { TaskList } from "./data management/list-data.js";
 import type { Task } from "./data management/task-data.js";
@@ -47,11 +48,37 @@ export const UUID = {
  */
 export type HTMLElementOrNull = HTMLLIElement | HTMLDivElement | null;
 
-/**
- * Array to store all tasks.
- */
-export const tasks: Task[] = [];
-export const taskLists: TaskList[] = [];
-export const app: HTMLDivElement = document.getElementById(
-  "app",
-) as HTMLDivElement;
+export type Status =
+  | 200 // OK
+  | 201 // Created
+  | 204 // No Content
+  | 301 // Moved Permanently
+  | 302 // Found
+  | 400 // Bad Request
+  | 401 // Unauthorized
+  | 403 // Forbidden
+  | 404 // Not Found
+  | 409 // Conflict
+  | 422 // Unprocessable Entity
+  | 500 // Internal Server Error
+  | 502 // Bad Gateway
+  | 503 // Service Unavailable
+  | 504; // Gateway Timeout
+
+export const STATUS_MESSAGES: Record<Status, string> = {
+  200: "OK",
+  201: "Created",
+  204: "No Content",
+  301: "Moved Permanently",
+  302: "Found",
+  400: "Bad Request",
+  401: "Unauthorized",
+  403: "Forbidden",
+  404: "Not Found",
+  409: "Conflict",
+  422: "Unprocessable Entity",
+  500: "Internal Server Error",
+  502: "Bad Gateway",
+  503: "Service Unavailable",
+  504: "Gateway Timeout",
+};

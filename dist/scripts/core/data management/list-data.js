@@ -1,23 +1,22 @@
-import { taskLists, UUID, tasks } from "../data.js";
-import { renderApp } from "../render.js";
+import { UUID } from "../types.js";
+import { taskLists, tasks } from "../runtime.js";
 import { deleteTask } from "./task-data.js";
 export {};
 /**
  * Creates a new task list with the specified name.
  * @param name - The name of the task list to create.
  */
-export function createTaskList() {
+export function createTaskList(name = "") {
     const taskList = {
         id: crypto.randomUUID(),
-        name: "",
+        name: name,
         createdAt: new Date(),
     };
     taskLists.push(taskList);
     console.log(`Task list "${taskList.name}" created with ID: ${taskList.id}`);
-    renderApp();
     return taskList;
 }
-export function deleteTaskList(listId, updateRender = true) {
+export function deleteTaskList(listId) {
     const foundIndex = taskLists.findIndex((list) => list.id === listId);
     if (foundIndex === -1) {
         return;
@@ -26,11 +25,8 @@ export function deleteTaskList(listId, updateRender = true) {
         .filter((task) => task.listId === listId)
         .map((task) => task.id);
     deletedListItems.forEach((id) => {
-        deleteTask(id, false);
+        deleteTask(id);
     });
     taskLists.splice(foundIndex, 1); // Remove the task from the array
-    if (updateRender) {
-        renderApp();
-    }
 }
 //# sourceMappingURL=list-data.js.map

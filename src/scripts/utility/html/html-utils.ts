@@ -82,14 +82,25 @@ export const htmlUtils = {
    */
   createElement<T extends HTMLElement>(
     type: HTMLTag,
+    id?: string,
     classList: string[] = [],
   ): T {
     const element: T = document.createElement(type) as T;
-    if (!element) {
-      throw new Error(`Failed to create element of type ${type}`);
-    }
+    if (id) element.id = id; // Set the ID if provided
+
     if (classList && classList.length > 0) {
-      element.classList.add(...classList); // Add all classes to the element
+      const normalClasses = classList.filter((cls) => !cls.startsWith("fa-"));
+      element.classList.add(...normalClasses); // Add all classes to the element
+
+      const fontAwesomeClasses = classList.filter((cls) =>
+        cls.startsWith("fa-"),
+      );
+      if (fontAwesomeClasses.length > 0) {
+        const iconElement: HTMLElement = document.createElement("i");
+        iconElement.id = `${id}-icon`;
+        iconElement.classList.add(...fontAwesomeClasses); // Add all FA classes to the icon element
+        element.append(iconElement); // Append the icon element to the main element
+      }
     }
 
     registerEventListeners(element);
@@ -97,16 +108,16 @@ export const htmlUtils = {
     return element;
   },
 
-  createForm(classList: string[] = []): HTMLElement {
-    return this.createElement("form", classList);
+  createForm(id?: string, classList: string[] = []): HTMLElement {
+    return this.createElement("form", id, classList);
   },
 
-  createInput(classList: string[] = []): HTMLInputElement {
-    return this.createElement("input", classList);
+  createInput(id?: string, classList: string[] = []): HTMLInputElement {
+    return this.createElement("input", id, classList);
   },
 
-  createLabel(classList: string[] = []): HTMLLabelElement {
-    return this.createElement("label", classList);
+  createLabel(id?: string, classList: string[] = []): HTMLLabelElement {
+    return this.createElement("label", id, classList);
   },
 
   /**
@@ -147,57 +158,19 @@ export const htmlUtils = {
     return select;
   },
 
-  createContextMenu(
-    options: HTMLContextMenuOption[],
-    id: string = "",
-    classList: { button: string[]; menu: string[]; options: string[] },
-  ): HTMLButtonElement {
-    const menu: HTMLUListElement = htmlUtils.createElement("ul", [
-      "context-menu",
-      ...classList.menu,
-    ]);
-    {
-      const liElements: HTMLLIElement[] = options.map(
-        (option: HTMLContextMenuOption) => {
-          const element: HTMLLIElement = htmlUtils.createElement("li");
-          const button: HTMLButtonElement = htmlUtils.createElement("button", [
-            "context-menu__option-button",
-            ...classList.options,
-          ]);
-
-          element.id = stringUtils.toLower(option.name);
-          button.id = "context-menu__menu__option-button";
-
-          button.addEventListener("click", () => {
-            option.selectEvent();
-            menu.setAttribute("data-state", "close");
-          });
-
-          element.append(button);
-          return element;
-        },
+  getElementById<TElement extends HTMLElement>(id: string): TElement | null {
+    const element: HTMLElement | null = document.getElementById(id);
+    if (!element) {
+      console.error(
+        `[Error][htmlUtils.getElementById]: No element found with ID "${id}"`,
       );
-
-      menu.append(...liElements);
-
-      const button: HTMLButtonElement = htmlUtils.createElement("button", [
-        "context-menu__button",
-        ...classList.button,
-      ]);
-      {
-        button.id = stringUtils.isStringNullOrEmpty(id)
-          ? "context-menu__button"
-          : id;
-        button.addEventListener("click", () => {
-          menu.setAttribute("data-state", "open");
-        });
-        button.append(menu);
-      }
-
-      return button;
+      return null;
     }
+    registerEventListeners(element);
+    return element as TElement;
   },
 };
+
 /**
  * Registers event listeners for an HTMLElement based on its type.
  *

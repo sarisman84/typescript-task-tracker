@@ -1,5 +1,5 @@
-import { UUID, tasks, type Color, type Tag } from "../data.js";
-import { renderApp } from "../render.js";
+import { UUID, type Color, type Tag } from "../types.js";
+import { tasks } from "../runtime.js";
 
 export {};
 
@@ -36,20 +36,15 @@ export function createTask(listId: UUID): void {
   console.log(
     `Task "${task.id}" created with ID: ${task.id} in list ID: ${task.listId}`,
   );
-
-  renderApp();
 }
 
-export function deleteTask(taskId: UUID, updateRender: boolean = true): void {
+export function deleteTask(taskId: UUID): void {
   const foundIndex = tasks.findIndex((task) => task.id === taskId);
   if (foundIndex === -1) {
     return;
   }
 
   tasks.splice(foundIndex, 1); // Remove the task from the array
-  if (updateRender) {
-    renderApp(); // Re-render the app
-  }
 
   console.log(`Task ${taskId} deleted successfully`);
 }
@@ -58,35 +53,22 @@ export interface AddTagDesc {
   task: Task;
   value: string;
   color: Color;
-  updateRender?: boolean; // Optional parameter with default value of true
 }
 
 export function addTagToTask(desc: AddTagDesc): void {
   const tag: Tag = { name: desc.value, color: desc.color, id: UUID.new() };
   desc.task.tags.push(tag);
 
-  if (desc.updateRender) {
-    renderApp(); // Re-render the app
-  }
-
   console.log(`[Log][Task/${desc.task.id}]: Added tag ${tag.id}/${tag.name}!`);
 }
 
-export function removeTagFromTask(
-  task: Task,
-  tagId: UUID,
-  updateRender: boolean = true,
-): void {
+export function removeTagFromTask(task: Task, tagId: UUID): void {
   const index = task.tags.findIndex((tag) => tag.id === tagId);
   if (index === -1) {
     return;
   }
 
   task.tags.splice(index, 1);
-
-  if (updateRender) {
-    renderApp(); // Re-render the app
-  }
 
   console.log(`[Log][Task/${task.id}]: Removed tag ${tagId}!`);
 }
