@@ -2,6 +2,7 @@ import { deleteTaskList, } from "../core/data management/list-data.js";
 import { app, runtime } from "../core/runtime.js";
 import { htmlUtils } from "../utility/html/html-utils.js";
 import stringUtils from "../utility/string-utils.js";
+import { ContextMenu } from "./context-menu.js";
 /**
  * Renders a task list with a title form and task cards.
  *
@@ -21,20 +22,33 @@ export function drawTaskList(list) {
     const ulEntry = htmlUtils.createElement("ul", "task-list__entry");
     const article = htmlUtils.createElement("article", "task-list", ["task-list"]);
     article.setAttribute("aria-labelledby", "list-name");
+    article.events.onContextMenu((event) => {
+        event.preventDefault();
+        drawListContextMenu(list, event);
+    });
     const header = htmlUtils.createElement("header", "task-list__header", ["task-list__header"]);
-    const deleteButton = htmlUtils.createElement("button", "task-list__delete-button", ["u-button", "u-button--delete"]);
-    {
-        deleteButton.textContent = "Delete";
-        deleteButton.events.onClick(() => {
-            deleteTaskList(list.id);
-            runtime.saveDataAndRefreshAppRenderer();
-        });
-        header.append(drawTitleForms(list), deleteButton);
-    }
+    const contextMenu = htmlUtils.createElement("button", "task-list__context-menu", ["u-icon", "fa-ellipsis-vertical", "fa-solid"]);
+    contextMenu.events.onClick((event) => {
+        event.preventDefault();
+        drawListContextMenu(list, contextMenu);
+    });
+    header.append(drawTitleForms(list), contextMenu);
     article.append(header);
     ulEntry.append(article);
     app.append(ulEntry);
     return article;
+}
+function drawListContextMenu(list, position) {
+    const options = [
+        {
+            label: "Delete List",
+            event: () => {
+                deleteTaskList(list.id);
+                runtime.saveDataAndRefreshAppRenderer();
+            },
+        },
+    ];
+    ContextMenu.openMenu(options, position);
 }
 /**
  * Draws a form containing a label and input for editing the list title.

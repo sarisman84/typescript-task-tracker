@@ -1,5 +1,5 @@
 import { UUID } from "../core/types.js";
-import { app, runtime } from "../core/runtime.js";
+import { app, pageRoot, runtime } from "../core/runtime.js";
 import { htmlUtils } from "../utility/html/html-utils.js";
 
 /**
@@ -142,7 +142,7 @@ export function renderContextMenu(): void {
       currentInstructions.openState ? "open" : "close",
     );
   }
-  app.events.onClick((event: PointerEvent) => {
+  pageRoot?.events.onClick((event: PointerEvent) => {
     if (
       currentInstructions.cooldown >= Date.now() ||
       !currentInstructions.openState ||

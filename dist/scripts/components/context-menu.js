@@ -1,5 +1,5 @@
 import { UUID } from "../core/types.js";
-import { app, runtime } from "../core/runtime.js";
+import { app, pageRoot, runtime } from "../core/runtime.js";
 import { htmlUtils } from "../utility/html/html-utils.js";
 /**
  * Namespace for managing context menus.
@@ -90,7 +90,7 @@ export function renderContextMenu() {
         menu.style.top = `${position.y}px`;
         menu.setAttribute("data-state", currentInstructions.openState ? "open" : "close");
     }
-    app.events.onClick((event) => {
+    pageRoot?.events.onClick((event) => {
         if (currentInstructions.cooldown >= Date.now() ||
             !currentInstructions.openState ||
             menu.getAttribute("data-state") === "close") {

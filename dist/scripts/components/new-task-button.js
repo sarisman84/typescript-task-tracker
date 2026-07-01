@@ -2,7 +2,7 @@ import { createTask } from "../core/data management/task-data.js";
 import { runtime } from "../core/runtime.js";
 import { htmlUtils } from "../utility/html/html-utils.js";
 export function drawNewTaskButton(targetListId) {
-    const section = htmlUtils.createElement("section", "new-task-button", ["u-transparent", "task--empty"]);
+    const section = htmlUtils.createElement("section", "new-task-button", ["u-transparent", "card--empty"]);
     {
         const newTaskButton = htmlUtils.createElement("button", "new-task-button", ["u-button", "u-button--create"]);
         newTaskButton.textContent = "New Task";

@@ -1,4 +1,5 @@
 import { createTaskList } from "../core/data management/list-data.js";
+import { runtime } from "../core/runtime.js";
 import { htmlUtils } from "../utility/html/html-utils.js";
 
 export function drawNewListButton(): HTMLElement {
@@ -15,6 +16,7 @@ export function drawNewListButton(): HTMLElement {
     newListButton.textContent = "New List";
     newListButton.addEventListener("click", () => {
       createTaskList();
+      runtime.saveDataAndRefreshAppRenderer();
     });
 
     content.append(newListButton);

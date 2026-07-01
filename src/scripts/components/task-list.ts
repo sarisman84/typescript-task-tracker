@@ -6,6 +6,7 @@ import {
 import { app, runtime } from "../core/runtime.js";
 import { htmlUtils } from "../utility/html/html-utils.js";
 import stringUtils from "../utility/string-utils.js";
+import { ContextMenu, type ContextMenuOption } from "./context-menu.js";
 
 /**
  * Renders a task list with a title form and task cards.
@@ -33,6 +34,10 @@ export function drawTaskList(list: TaskList): HTMLElement {
     ["task-list"],
   );
   article.setAttribute("aria-labelledby", "list-name");
+  article.events.onContextMenu((event: PointerEvent) => {
+    event.preventDefault();
+    drawListContextMenu(list, event);
+  });
 
   const header: HTMLElement = htmlUtils.createElement(
     "header",
@@ -40,25 +45,38 @@ export function drawTaskList(list: TaskList): HTMLElement {
     ["task-list__header"],
   );
 
-  const deleteButton: HTMLButtonElement = htmlUtils.createElement(
+  const contextMenu: HTMLButtonElement = htmlUtils.createElement(
     "button",
-    "task-list__delete-button",
-    ["u-button", "u-button--delete"],
-  ) as HTMLButtonElement;
-  {
-    deleteButton.textContent = "Delete";
-    deleteButton.events.onClick(() => {
-      deleteTaskList(list.id);
-      runtime.saveDataAndRefreshAppRenderer();
-    });
-    header.append(drawTitleForms(list), deleteButton);
-  }
+    "task-list__context-menu",
+    ["u-icon", "fa-ellipsis-vertical", "fa-solid"],
+  );
+  contextMenu.events.onClick((event: PointerEvent) => {
+    event.preventDefault();
+    drawListContextMenu(list, contextMenu);
+  });
+  header.append(drawTitleForms(list), contextMenu);
 
   article.append(header);
 
   ulEntry.append(article);
   app.append(ulEntry);
   return article;
+}
+
+function drawListContextMenu(
+  list: TaskList,
+  position: HTMLButtonElement | PointerEvent,
+) {
+  const options: ContextMenuOption[] = [
+    {
+      label: "Delete List",
+      event: () => {
+        deleteTaskList(list.id);
+        runtime.saveDataAndRefreshAppRenderer();
+      },
+    },
+  ];
+  ContextMenu.openMenu(options, position);
 }
 
 /**

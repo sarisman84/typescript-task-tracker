@@ -16,6 +16,7 @@
 html {
   box-sizing: border-box;
   font-size: var(--font-size-base);
+  height: 100vh;
 }
 
 *,
@@ -25,16 +26,7 @@ html {
 }
 
 /* Remove default margins and padding from common elements */
-body,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-p,
-ol,
-ul {
+* {
   margin: 0;
   padding: 0;
   font-weight: normal;
@@ -179,6 +171,7 @@ img {
 }
 
 .u-icon {
+  padding: 0;
   background-color: transparent;
   border-color: transparent;
 }
@@ -188,19 +181,6 @@ img {
   color: var(--accent-500);
 }
 
-/* ==========================================
-   4. Global Layout Styles
-   Base styling for main application layout components.
-   ========================================== */
-body {
-  font-family: system-ui, sans-serif;
-  background-color: var(--background-200);
-}
-
-/* ==========================================
-   5. Default Blocks
-   Base styling for typescript generated elements.
-   ========================================== */
 .sc-only {
   clip: rect(1px, 1px, 1px, 1px);
   clip-path: inset(50%);
@@ -210,6 +190,40 @@ body {
   overflow: hidden;
   padding: 0;
   position: absolute;
+}
+
+/* ==========================================
+   4. Global Layout Styles
+   Base styling for main application layout components.
+   ========================================== */
+
+html,
+body,
+main {
+  height: 100%;
+  margin: 0;
+}
+
+main {
+  padding-block: 3rem;
+}
+
+/* ==========================================
+   5. Default Blocks
+   Base styling for typescript generated elements.
+   ========================================== */
+
+.page-root {
+  display: flex;
+  flex-direction: column;
+
+  font-family: system-ui, sans-serif;
+  background-color: var(--background-200);
+
+  overflow: auto;
+  scrollbar-color: var(--primary-500) transparent;
+
+  height: 100%;
 }
 
 .context-menu {
@@ -255,6 +269,9 @@ body {
    ========================================== */
 
 .header {
+  position: fixed;
+  width: 100%;
+
   display: flex;
   align-items: center;
   gap: var(--space-unit);
@@ -265,8 +282,10 @@ body {
 
 .app {
   display: flex;
+  flex: 1 1 auto;
+
   gap: var(--space-unit);
-  padding-inline: var(--space-unit);
+  padding-inline: 1rem;
 }
 
 .app-header {

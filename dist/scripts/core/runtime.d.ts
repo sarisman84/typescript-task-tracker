@@ -6,6 +6,7 @@ import type { Task } from "./data management/task-data.js";
 export declare const tasks: Task[];
 export declare const taskLists: TaskList[];
 export declare const app: HTMLDivElement | null;
+export declare const pageRoot: HTMLElement | null;
 export declare const runtime: {
     saveDataAndRefreshAppRenderer(): void;
     refreshAppRender(): void;

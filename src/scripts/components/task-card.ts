@@ -50,6 +50,11 @@ export function drawTaskCard(task: Task): HTMLFormElement {
     runtime.saveDataAndRefreshAppRenderer();
   });
 
+  card.events.onContextMenu((event: PointerEvent) => {
+    event.preventDefault();
+    drawTaskContextMenu(task, event);
+  });
+
   // Create card header and its related elements.
   const header: HTMLElement = drawTaskCardHeader(task);
 
@@ -107,7 +112,7 @@ function drawTaskCardFooter(task: Task) {
     const createTagButton = htmlUtils.createElement(
       "button",
       "task-card__tag--create-button",
-      ["u-icon", "fa-ellipsis-vertical", "fa-solid"],
+      ["u-icon", "fa-square-plus", "fa-regular"],
     );
 
     createTagButton.events.onClick((event: PointerEvent) => {
@@ -201,21 +206,36 @@ function drawTaskCardHeader(task: Task) {
     );
     dateElement.textContent = stringUtils.formatDate(task.createdAt);
 
-    const deleteButton: HTMLButtonElement = htmlUtils.createElement(
+    const contextMenuButton: HTMLButtonElement = htmlUtils.createElement(
       "button",
-      "task-card__delete-button",
-      ["u-button", "u-button--delete"],
+      "task-card__context-menu-button",
+      ["u-icon", "fa-solid", "fa-ellipsis-vertical"],
     );
-    deleteButton.textContent = "Delete";
 
-    deleteButton.events.onClick(() => {
-      deleteTask(task.id);
-      runtime.saveDataAndRefreshAppRenderer();
+    contextMenuButton.events.onClick((event: PointerEvent) => {
+      event.preventDefault();
+      drawTaskContextMenu(task, contextMenuButton);
     });
 
-    header.append(dateElement, deleteButton);
+    header.append(dateElement, contextMenuButton);
   }
   return header;
+}
+
+function drawTaskContextMenu(
+  task: Task,
+  position: HTMLButtonElement | PointerEvent,
+) {
+  const options: ContextMenuOption[] = [
+    {
+      label: "Delete Task",
+      event: () => {
+        deleteTask(task.id);
+        runtime.saveDataAndRefreshAppRenderer();
+      },
+    },
+  ];
+  ContextMenu.openMenu(options, position);
 }
 
 function registerBodyEventListeners(

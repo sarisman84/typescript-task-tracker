@@ -10,6 +10,8 @@ import { refreshAppRender } from "./render.js";
 export const tasks: Task[] = [];
 export const taskLists: TaskList[] = [];
 export const app: HTMLDivElement | null = htmlUtils.getElementById("app");
+export const pageRoot: HTMLElement | null =
+  htmlUtils.getElementById("page-root");
 
 export const runtime = {
   saveDataAndRefreshAppRenderer(): void {

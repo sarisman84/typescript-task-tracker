@@ -28,6 +28,10 @@ export function drawTaskCard(task) {
         event.preventDefault();
         runtime.saveDataAndRefreshAppRenderer();
     });
+    card.events.onContextMenu((event) => {
+        event.preventDefault();
+        drawTaskContextMenu(task, event);
+    });
     // Create card header and its related elements.
     const header = drawTaskCardHeader(task);
     //Create card body and its related elements
@@ -67,7 +71,7 @@ function drawTaskCardFooter(task) {
             });
             return element;
         });
-        const createTagButton = htmlUtils.createElement("button", "task-card__tag--create-button", ["u-icon", "fa-ellipsis-vertical", "fa-solid"]);
+        const createTagButton = htmlUtils.createElement("button", "task-card__tag--create-button", ["u-icon", "fa-square-plus", "fa-regular"]);
         createTagButton.events.onClick((event) => {
             event.preventDefault();
             const tags = getAvailableTags(task);
@@ -128,15 +132,26 @@ function drawTaskCardHeader(task) {
         header.id = "card__header";
         const dateElement = htmlUtils.createElement("p", "task-card__date", ["card__date"]);
         dateElement.textContent = stringUtils.formatDate(task.createdAt);
-        const deleteButton = htmlUtils.createElement("button", "task-card__delete-button", ["u-button", "u-button--delete"]);
-        deleteButton.textContent = "Delete";
-        deleteButton.events.onClick(() => {
-            deleteTask(task.id);
-            runtime.saveDataAndRefreshAppRenderer();
+        const contextMenuButton = htmlUtils.createElement("button", "task-card__context-menu-button", ["u-icon", "fa-solid", "fa-ellipsis-vertical"]);
+        contextMenuButton.events.onClick((event) => {
+            event.preventDefault();
+            drawTaskContextMenu(task, contextMenuButton);
         });
-        header.append(dateElement, deleteButton);
+        header.append(dateElement, contextMenuButton);
     }
     return header;
+}
+function drawTaskContextMenu(task, position) {
+    const options = [
+        {
+            label: "Delete Task",
+            event: () => {
+                deleteTask(task.id);
+                runtime.saveDataAndRefreshAppRenderer();
+            },
+        },
+    ];
+    ContextMenu.openMenu(options, position);
 }
 function registerBodyEventListeners(body, task, textArea) {
     {

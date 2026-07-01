@@ -7,6 +7,7 @@ import { refreshAppRender } from "./render.js";
 export const tasks = [];
 export const taskLists = [];
 export const app = htmlUtils.getElementById("app");
+export const pageRoot = htmlUtils.getElementById("page-root");
 export const runtime = {
     saveDataAndRefreshAppRenderer() {
         console.log("[Log][Runtime/saveAndRefreshAppRender]: Saving data and refreshing app render..."); // Debug log

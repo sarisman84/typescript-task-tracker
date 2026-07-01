@@ -6,7 +6,7 @@ export function drawNewTaskButton(targetListId: string): HTMLElement {
   const section: HTMLElement = htmlUtils.createElement(
     "section",
     "new-task-button",
-    ["u-transparent", "task--empty"],
+    ["u-transparent", "card--empty"],
   );
   {
     const newTaskButton: HTMLButtonElement = htmlUtils.createElement(
