@@ -10,7 +10,10 @@ import { tasks, runtime } from "../core/runtime.js";
 import { UUID } from "../core/types.js";
 
 /** The ID of the task currently being dragged, or empty if nothing is being dragged. */
-let draggedElement: UUID = UUID.empty;
+let draggedElement: { id: UUID; element: HTMLElement | null } = {
+  id: UUID.empty,
+  element: null,
+};
 
 /**
  * Description for applying drag-and-drop behaviour to a set of cards and collections.
@@ -47,6 +50,14 @@ export function applyDraggableBehaviour(desc: DragBehaviourDesc) {
   collections.forEach((_, index: number) => {
     applyDragBehaviourToCollection(collections, index);
   });
+
+  document.ondragover = (e) => {
+    e.preventDefault();
+  };
+  document.ondrop = (e) => {
+    e.preventDefault();
+    resetElements(collections);
+  };
 }
 
 /**
@@ -78,27 +89,24 @@ function applyDragBehaviourToCard(
     cardElement.draggable = false;
   };
 
-  /**
-   * Callback invoked when a drag operation begins on this card.
-   * Marks all collections as potential drop targets and lifts the card visually.
-   */
-  function onStartDraggingCard(event: DragEvent) {
-    collections.forEach((collection) => {
-      collection.classList.add("marked-for-drop");
-    });
-
-    draggedElement = currentTaskId;
-    const self = event.target as HTMLElement;
-    self.classList.add("card--lifted");
-
-    event.dataTransfer!.effectAllowed = "move";
-    console.log(
-      `[Log][applyDraggableBehaviour/onStartDraggingCard]: Started dragging card with ID: ${currentTaskId}.`,
-    );
-  }
-
   cardElement.ondragstart = (e: DragEvent) => {
-    onStartDraggingCard(e);
+    handleDragStartForCards(e, collections, currentTaskId, cardElement);
+  };
+
+  cardElement.ondragover = (e: DragEvent) => {
+    const card = e.target as HTMLElement;
+    if (card.id === cardElement.id) {
+      return;
+    }
+    e.preventDefault();
+  };
+
+  cardElement.ondrop = (e: DragEvent) => {
+    const card = e.target as HTMLElement;
+    if (card.id === cardElement.id) {
+      return;
+    }
+    handleDropEvent(e, collections);
   };
 }
 
@@ -128,58 +136,94 @@ function applyDragBehaviourToCollection(
     e.preventDefault();
   };
 
-  /**
-   * Handle a drop event on this collection.
-   *
-   * Validates that the drop target is a valid category collection and that the
-   * dragged task exists in the store. If so, updates the task's `listId` to this
-   * collection's ID and refreshes the app renderer.
-   */
-  collection.ondrop = (e: DragEvent) => {
-    e.preventDefault();
-
-    collections.forEach((collection) => {
-      collection.classList.remove("marked-for-drop");
-    });
-
-    const targetElement: HTMLElement = e.target as HTMLElement;
-    if (!targetElement.id.match("category__collection")) {
-      console.error(
-        `[Error][applyDraggableBehaviour/applyDragBehaviourToCollection]: ${targetElement.id ?? targetElement.tagName} is not a valid category collection.`,
-      );
-      return;
-    }
-    const targetListId: UUID =
-      targetElement.getAttribute("data-id") ?? UUID.empty;
-
-    if (targetListId === UUID.empty) {
-      console.error(
-        `[Error][applyDraggableBehaviour/applyDragBehaviourToCollection]: Invalid list ID for drop target ${targetElement.id ?? targetElement.tagName}: ${targetListId}`,
-      );
-      return;
-    }
-
-    const taskId = draggedElement;
-    const taskIndex = tasks.value.findIndex((task) => task.id === taskId);
-    if (taskIndex === -1) {
-      console.error(
-        `[Error][applyDraggableBehaviour/applyDragBehaviourToCollection]: Task with ID ${taskId} not found in tasks array.`,
-      );
-      return;
-    }
-
-    const task = tasks.value[taskIndex];
-    if (!task) {
-      console.error(
-        `[Error][applyDraggableBehaviour/applyDragBehaviourToCollection]: Task with ID ${taskId} not found in tasks array.`,
-      );
-      return;
-    }
-
-    task.listId = targetListId;
-    runtime.saveDataAndRefreshAppRenderer();
-    console.log(
-      `[Log][applyDraggableBehaviour/applyDragBehaviourToCollection]: Moved task ${task.id} to list ${targetListId}.`,
-    );
+  collection.ondrop = (e) => {
+    handleDropEvent(e, collections);
   };
+}
+
+/**
+ * Callback invoked when a drag operation begins on this card.
+ * Marks all collections as potential drop targets and lifts the card visually.
+ */
+function handleDragStartForCards(
+  event: DragEvent,
+  collections: HTMLElement[],
+  currentTaskId: UUID,
+  cardElement: HTMLElement,
+) {
+  collections.forEach((collection) => {
+    collection.classList.add("marked-for-drop");
+  });
+
+  draggedElement = {
+    id: currentTaskId,
+    element: cardElement,
+  };
+  const self = event.target as HTMLElement;
+  self.classList.add("card--lifted");
+
+  event.dataTransfer!.effectAllowed = "move";
+  console.log(
+    `[Log][applyDraggableBehaviour/onStartDraggingCard]: Started dragging card with ID: ${currentTaskId}.`,
+  );
+}
+
+/**
+ * Handle a drop event on this collection.
+ *
+ * Validates that the drop target is a valid category collection and that the
+ * dragged task exists in the store. If so, updates the task's `listId` to this
+ * collection's ID and refreshes the app renderer.
+ */
+
+function handleDropEvent(e: DragEvent, collections: HTMLElement[]): void {
+  e.preventDefault();
+
+  resetElements(collections);
+
+  const targetElement: HTMLElement = e.target as HTMLElement;
+  targetElement.hasAttribute("data-list-id");
+  const targetListId: UUID =
+    (targetElement.hasAttribute("data-list-id")
+      ? targetElement.getAttribute("data-list-id")
+      : targetElement.getAttribute("data-id")) ?? UUID.empty;
+
+  if (targetListId === UUID.empty) {
+    console.error(
+      `[Error][applyDraggableBehaviour/handleDropEvent]: Invalid list ID for drop target ${targetElement.id ?? targetElement.tagName}: ${targetListId}`,
+    );
+    return;
+  }
+
+  const taskId = draggedElement.id;
+  const taskIndex = tasks.value.findIndex((task) => task.id === taskId);
+  if (taskIndex === -1) {
+    console.error(
+      `[Error][applyDraggableBehaviour/handleDropEvent]: Task with ID ${taskId} not found in tasks array.`,
+    );
+    return;
+  }
+
+  const task = tasks.value[taskIndex];
+  if (!task) {
+    console.error(
+      `[Error][applyDraggableBehaviour/handleDropEvent]: Task with ID ${taskId} not found in tasks array.`,
+    );
+    return;
+  }
+
+  task.listId = targetListId;
+  runtime.saveDataAndRefreshAppRenderer();
+  console.log(
+    `[Log][applyDraggableBehaviour/handleDropEvent]: Moved task ${task.id} to list ${targetListId}.`,
+  );
+}
+function resetElements(collections: HTMLElement[]) {
+  collections.forEach((collection) => {
+    collection.classList.remove("marked-for-drop");
+  });
+
+  if (draggedElement.element) {
+    draggedElement.element.classList.remove("card--lifted");
+  }
 }

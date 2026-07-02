@@ -40,6 +40,7 @@ function drawRelatedTaskCards(list, tasks, listElement, root) {
         // renderRelatedTask(task, taskListElement);
         const entryElement = htmlUtils.createElement("li", "category__entry");
         entryElement.setAttribute("data-id", task.id);
+        entryElement.setAttribute("data-list-id", list.id);
         const { card, grabber } = drawTaskCard(task);
         entryElement.append(card);
         entries.push({ card: entryElement, grabber });
