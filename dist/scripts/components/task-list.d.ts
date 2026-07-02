@@ -11,8 +11,5 @@ import type { Task } from "../core/data management/task-data.js";
  * @param tasks - The array of `Task` objects to render as cards within the list
  * @returns A populated `<ul>` element containing the rendered task list
  */
-export declare function drawTaskList(list: TaskList, tasks: Task[]): {
-    dropArea: HTMLElement | null;
-    article: HTMLElement | null;
-};
+export declare function drawTaskList(list: TaskList, tasks: Task[]): HTMLElement | null;
 //# sourceMappingURL=task-list.d.ts.map

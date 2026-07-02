@@ -7,10 +7,11 @@ import type { Task } from "../core/data management/task-data.js";
 import { app, runtime } from "../core/runtime.js";
 import { htmlUtils } from "../utility/html/html-utils.js";
 import stringUtils from "../utility/string-utils.js";
-import { applyDraggableBehavior } from "../behaviours/drag-and-drop.js";
+import { applyDraggableBehaviour } from "../behaviours/drag-and-drop.js";
 import { ContextMenu, type ContextMenuOption } from "./context-menu.js";
 import { drawNewTaskButton } from "./new-task-button.js";
 import { drawTaskCard } from "./task-card.js";
+import { UUID } from "../core/types.js";
 
 /**
  * Renders a task list with a title form and task cards.
@@ -26,68 +27,74 @@ import { drawTaskCard } from "./task-card.js";
 export function drawTaskList(
   list: TaskList,
   tasks: Task[],
-): { dropArea: HTMLElement | null; article: HTMLElement | null } {
+): HTMLElement | null {
   if (!app) {
     console.error(`[Error]: App container not found. Cannot render task list.`);
-    return { dropArea: null, article: null }; // Return an empty div to avoid further errors
+    return null;
   }
 
-  const article: HTMLUListElement = htmlUtils.createElement(
-    "article",
-    "category",
-  );
+  const root: HTMLUListElement = htmlUtils.createElement("article", "category");
   const wrapper: HTMLElement = htmlUtils.createElement(
     "div",
     "category__wrapper",
     ["category"],
   );
-  article.setAttribute("data-id", list.id);
-  article.setAttribute("aria-labelledby", "list-name");
-  article.append(wrapper);
+  root.setAttribute("data-id", list.id);
+  root.setAttribute("aria-labelledby", "list-name");
+  root.append(wrapper);
 
   wrapper.append(drawTaskListHeader(list));
-
-  const dropArea: HTMLElement = htmlUtils.createElement(
-    "div",
-    "category__drop-area",
-    ["category__drop-area", "fa-box-tissue", "fa-solid"],
-  );
 
   const unorderedList: HTMLDivElement = htmlUtils.createElement(
     "ul",
     "category__collection",
     ["category__collection"],
   );
-  drawRelatedTaskCards(list, tasks, unorderedList, dropArea);
+  drawRelatedTaskCards(list, tasks, unorderedList, root);
 
   wrapper.append(unorderedList);
-  wrapper.append(dropArea);
   wrapper.append(drawNewTaskButton(list.id));
 
-  app.append(article);
-  return { dropArea, article };
+  app.append(root);
+  return root;
 }
 
 function drawRelatedTaskCards(
   list: TaskList,
   tasks: Task[],
-  article: HTMLDivElement,
-  dropArea: HTMLElement,
+  listElement: HTMLElement,
+  root: HTMLElement,
 ) {
-  tasks.forEach((task: Task) => {
+  const cards: HTMLElement[] = [];
+  tasks.forEach((task: Task, index: number) => {
     // renderRelatedTask(task, taskListElement);
-    const liElement: HTMLLIElement = htmlUtils.createElement(
+    const entryElement: HTMLLIElement = htmlUtils.createElement(
       "li",
-      "task-entry",
+      "category__entry",
     );
-    liElement.setAttribute("data-task-id", task.id);
-    liElement.setAttribute("data-list-id", task.listId);
+    entryElement.setAttribute("data-id", task.id);
 
-    const { card, grabber } = drawTaskCard(task);
-    applyDraggableBehavior(task, list, dropArea, card, grabber);
+    const { card } = drawTaskCard(task);
 
-    liElement.append(card);
-    article.append(liElement);
+    entryElement.append(card);
+    cards.push(entryElement);
+
+    if (index !== tasks.length - 1) {
+      const divider: HTMLDivElement = htmlUtils.createElement(
+        "div",
+        "category__entry-divider",
+        ["category__entry-divider"],
+      );
+      entryElement.append(divider);
+    }
+
+    listElement.append(entryElement);
+  });
+
+  applyDraggableBehaviour({
+    cards,
+    list: root,
+    listId: list.id,
   });
 }
 

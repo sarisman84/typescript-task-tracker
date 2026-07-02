@@ -1,71 +1,89 @@
 import { tasks, runtime } from "../core/runtime.js";
 import { UUID } from "../core/types.js";
 let draggedElement = UUID.empty;
-let temp;
-export function applyDraggableBehavior(task, list, dropArea, card, grabber) {
-    card.draggable = true;
-    card.ondragstart = (e) => {
-        onStartCardDragging(e, dropArea, card, task, list);
-    };
-    document.ondrop = (e) => {
-        onCardDropped(e, dropArea, card, task, list);
-    };
-    document.ondragover = (event) => {
-        event.preventDefault();
-        const underneath = document.elementFromPoint(event.clientX, event.clientY);
-        if (!underneath)
+export function applyDraggableBehaviour(desc) {
+    const { cards, list, listId } = desc;
+    cards.forEach((cardElement) => {
+        const taskId = cardElement.getAttribute("data-id") ?? UUID.empty;
+        if (taskId == UUID.empty) {
             return;
-        console.log(underneath.id);
+        }
+        applyDragBehaviourToCard(cardElement, listId, taskId);
+    });
+    applyDragBehaviourToList(list);
+}
+function applyDragBehaviourToCard(cardElement, parentListId, currentTaskId) {
+    cardElement.draggable = true;
+    function onStartDraggingCard(event) {
+        queryAllCollections(parentListId).forEach((collection) => {
+            collection.classList.add("marked-for-drop");
+        });
+        draggedElement = currentTaskId;
+        const self = event.target;
+        self.classList.add("card--lifted");
+        event.dataTransfer.effectAllowed = "move";
+    }
+    cardElement.ondragstart = (e) => {
+        onStartDraggingCard(e);
     };
 }
-function setDropAreaToActive(dropAreaId, value) {
-    if (dropAreaId) {
-        document.querySelectorAll("#category__drop-area").forEach((element) => {
-            const area = element;
-            const id = area.parentElement?.parentElement?.getAttribute("data-id");
-            if (id && id === dropAreaId || !id) {
-                return;
-            }
-            area.setAttribute("data-state", value ? "active" : "inactive");
+function applyDragBehaviourToList(collection) {
+    collection.ondragover = (e) => {
+        e.preventDefault();
+    };
+    collection.ondrop = (e) => {
+        e.preventDefault();
+        queryAllCollections().forEach((collection) => {
+            collection.classList.remove("marked-for-drop");
         });
-    }
+        const targetElement = e.target;
+        if (!targetElement.id.match("category__collection")) {
+            return;
+        }
+        const targetListId = targetElement.parentElement?.parentElement?.getAttribute("data-id") ??
+            UUID.empty;
+        if (targetListId === UUID.empty) {
+            return;
+        }
+        const taskId = draggedElement;
+        const taskIndex = tasks.value.findIndex((task) => task.id === taskId);
+        if (taskIndex === -1) {
+            return;
+        }
+        const task = tasks.value[taskIndex];
+        if (!task) {
+            return;
+        }
+        task.listId = targetListId;
+        runtime.saveDataAndRefreshAppRenderer();
+    };
 }
-function moveTaskToList(targetTaskId, listIdToMoveTo) {
-    const taskIndex = tasks.value.findIndex((t) => t.id === targetTaskId);
-    if (taskIndex === -1 ||
-        !tasks.value[taskIndex] ||
-        listIdToMoveTo === tasks.value[taskIndex]?.id ||
-        listIdToMoveTo === UUID.empty)
-        return; // If the task is already in the list, return early
-    tasks.value[taskIndex].listId = listIdToMoveTo; // Update the task's list ID to the new list ID
-    runtime.saveDataAndRefreshAppRenderer(); // Save and refresh the app renderer
+function queryAllCollections(...idsToAvoid) {
+    const result = [];
+    const foundCollections = document.querySelectorAll("#category__collection");
+    for (const collection of foundCollections) {
+        const parent = collection.parentElement;
+        if (!parent) {
+            continue;
+        }
+        const id = parent.getAttribute("data-id");
+        if (!id || idsToAvoid.find((colId) => colId === id)) {
+            continue;
+        }
+        result.push(collection);
+    }
+    return result;
 }
-function onCardDropped(event, dropArea, card, task, list) {
-    event.preventDefault();
-    if (draggedElement === UUID.empty) {
-        console.warn("[Warn][List/${list.id}/applyDraggableBehavior]: No dragged element found! (This is a bug)`");
-        return;
+function queryCards(...idsToSearch) {
+    const result = [];
+    const foundCards = document.querySelectorAll("#category__entry");
+    for (const card of foundCards) {
+        const id = card.getAttribute("data-id");
+        if (!id || !idsToSearch.find((cardId) => cardId === id)) {
+            continue;
+        }
+        result.push(card);
     }
-    console.log(`[Log][List/${list.id}/applyDraggableBehavior]: Attempting to drop something!`);
-    card.classList.remove("card--lifted");
-    const id = event.target.parentElement?.parentElement?.getAttribute("data-id");
-    if (id) {
-        moveTaskToList(draggedElement, id);
-        console.log(`[Log][List/${id}/applyDraggableBehavior]: Dragged task of ${task.id} to ${list.name}`);
-    }
-    else {
-        console.log(`[Warn][List/${id}/applyDraggableBehavior]: Could not find drop area! (This is a bug)`);
-    }
-    setDropAreaToActive(id, false);
-    draggedElement = UUID.empty;
-}
-function onStartCardDragging(event, dropArea, card, task, list) {
-    const dropAreaId = dropArea.parentElement?.parentElement?.getAttribute("data-id");
-    setDropAreaToActive(dropAreaId, true);
-    const self = event.target;
-    self.classList.add("card--lifted"); // This is a hack to make the card look lifted when dragging
-    draggedElement = task.id;
-    event.dataTransfer.effectAllowed = "move";
-    console.log(`[Log][List/${list.id}/applyDraggableBehavior]: Started dragging task ${task.id} from list \"${list.name}\"`);
+    return result;
 }
 //# sourceMappingURL=drag-and-drop.js.map

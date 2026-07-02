@@ -1,4 +1,8 @@
-import type { TaskList } from "../core/data management/list-data.js";
-import type { Task } from "../core/data management/task-data.js";
-export declare function applyDraggableBehavior(task: Task, list: TaskList, dropArea: HTMLElement, card: HTMLElement, grabber: HTMLElement): void;
+import { UUID } from "../core/types.js";
+export interface DragBehaviourDesc {
+    cards: HTMLElement[];
+    list: HTMLElement;
+    listId: UUID;
+}
+export declare function applyDraggableBehaviour(desc: DragBehaviourDesc): void;
 //# sourceMappingURL=drag-and-drop.d.ts.map

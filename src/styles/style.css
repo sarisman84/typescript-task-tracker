@@ -192,6 +192,11 @@ img {
   position: absolute;
 }
 
+.marked-for-drop {
+  background-color: var(--primary-500);
+  z-index: 1000;
+}
+
 /* ==========================================
    4. Global Layout Styles
    Base styling for main application layout components.
@@ -299,11 +304,8 @@ main {
    Supports responsive columns based on available width.
    ========================================== */
 .category {
-  display: grid;
-
-  /* Uses the defined minimum column width with auto-fit */
-  grid-template-columns: repeat(auto-fit, var(--task-list-min-col-width));
-  gap: var(--space-unit);
+  display: flex;
+  flex-direction: column;
 
   align-items: start;
   align-content: start;
@@ -312,20 +314,6 @@ main {
   padding: var(--padding-content);
   margin-block-end: var(--space-unit);
   border-radius: var(--border-radius-card);
-}
-
-.category__drop-area {
-  height: 15rem;
-  display: none;
-  justify-content: center;
-  align-items: center;
-
-  color: var(--accent-200);
-}
-
-.category__drop-area[data-state="active"] {
-  display: flex;
-  z-index: 100;
 }
 
 .category__header {
@@ -361,9 +349,19 @@ main {
 }
 
 .category__collection {
-  display: grid;
-  grid-template-columns: subgrid;
-  gap: 1rem;
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+
+  justify-items: stretch;
+  justify-content: stretch;
+
+  padding-block: 1rem;
+}
+
+.category__entry-divider {
+  height: 1rem;
 }
 
 /* ==========================================
@@ -385,6 +383,10 @@ main {
   padding: var(--padding-content);
 
   width: 100%;
+}
+
+.marked-for-drop .card {
+  pointer-events: none;
 }
 
 .card--lifted {
