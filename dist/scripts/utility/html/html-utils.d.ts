@@ -1,59 +1,13 @@
 import type { HTMLTag } from "./html-tag.js";
 export {};
-type AddEventListener<K extends keyof HTMLElementEventMap> = (callback: (event: HTMLElementEventMap[K]) => void) => void;
-type Vector2 = {
-    x: number;
-    y: number;
-};
 declare global {
-    interface DragEvent {
-        setData<T>(type: string, obj: T): void;
-        getData<T>(type: string): T | null;
-    }
-    interface HTMLElement {
-        events: {
-            onClick: AddEventListener<"click">;
-            onDblClick: AddEventListener<"dblclick">;
-            onAuxClick: AddEventListener<"auxclick">;
-            onContextMenu: AddEventListener<"contextmenu">;
-            onMouseDown: AddEventListener<"mousedown">;
-            onMouseUp: AddEventListener<"mouseup">;
-            onMouseMove: AddEventListener<"mousemove">;
-            onMouseOver: AddEventListener<"mouseover">;
-            onMouseLeave: AddEventListener<"mouseleave">;
-            onMouseEnter: AddEventListener<"mouseenter">;
-            onKeyDown: AddEventListener<"keydown">;
-            onKeyPress: AddEventListener<"keypress">;
-            onKeyUp: AddEventListener<"keyup">;
-            onInput: AddEventListener<"input">;
-            onChange: AddEventListener<"change">;
-            onFocus: AddEventListener<"focus">;
-            onBlur: AddEventListener<"blur">;
-            onValueChanged: AddEventListener<"change">;
-            onSubmit: AddEventListener<"submit">;
-            onDrag: AddEventListener<"drag">;
-            onDragEnd: AddEventListener<"dragend">;
-            onDragEnter: AddEventListener<"dragenter">;
-            onDragLeave: AddEventListener<"dragleave">;
-            onDragOver: AddEventListener<"dragover">;
-            onDragStart: AddEventListener<"dragstart">;
-            onDrop: AddEventListener<"drop">;
-            onCopy: AddEventListener<"copy">;
-            onCut: AddEventListener<"cut">;
-            onPaste: AddEventListener<"paste">;
-            onLoad: AddEventListener<"load">;
-            onError: AddEventListener<"error">;
-            onResize: AddEventListener<"resize">;
-            onScroll: AddEventListener<"scroll">;
-            onWheel: AddEventListener<"wheel">;
-            onTouchStart: AddEventListener<"touchstart">;
-            onTouchEnd: AddEventListener<"touchend">;
-            onTouchMove: AddEventListener<"touchmove">;
-            onTouchCancel: AddEventListener<"touchcancel">;
-        };
-        position: Vector2;
+    interface NodeListOf<TNode extends Node> {
+        toArray(): TNode[];
     }
 }
+export declare const extensions: {
+    applyNodeListOfExtensions<TNode extends Node>(value: NodeListOf<TNode>): void;
+};
 export declare const htmlUtils: {
     /**
      * Creates a new DOM element of the specified type with the given CSS classes.
@@ -66,16 +20,8 @@ export declare const htmlUtils: {
     createForm(id?: string, classList?: string[]): HTMLElement;
     createInput(id?: string, classList?: string[]): HTMLInputElement;
     createLabel(id?: string, classList?: string[]): HTMLLabelElement;
-    /**
-     * Creates a dropdown (select) element with the given options and change handler.
-     *
-     * @param classList - An optional array of CSS class names to apply to the select element.
-     * @param options - An array of strings representing the available options in the dropdown.
-     * @param selectedValue - The value to initially select. Defaults to the first option if not provided or empty.
-     * @param onChange - A callback function invoked when the user selects a different option. Receives the selected value as its argument.
-     * @returns The newly created HTMLSelectElement with the specified options and change listener.
-     */
-    createDropdown(classList: string[] | undefined, options: string[], selectedValue: string | undefined, onChange: (value: string) => void): HTMLSelectElement;
     getElementById<TElement extends HTMLElement>(id: string): TElement | null;
+    querySelector<TElement extends Element>(selector: string, root?: Element | Document): TElement | null;
+    querySelectorAll<TElement extends Element>(selector: string, root?: Element | Document): TElement[] | Element[];
 };
 //# sourceMappingURL=html-utils.d.ts.map

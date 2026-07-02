@@ -2,11 +2,9 @@ import { deleteTaskList, } from "../core/data management/list-data.js";
 import { app, runtime } from "../core/runtime.js";
 import { htmlUtils } from "../utility/html/html-utils.js";
 import stringUtils from "../utility/string-utils.js";
-import { applyDraggableBehaviour } from "../behaviours/drag-and-drop.js";
 import { ContextMenu } from "./context-menu.js";
 import { drawNewTaskButton } from "./new-task-button.js";
 import { drawTaskCard } from "./task-card.js";
-import { UUID } from "../core/types.js";
 /**
  * Renders a task list with a title form and task cards.
  *
@@ -25,11 +23,11 @@ export function drawTaskList(list, tasks) {
     }
     const root = htmlUtils.createElement("article", "category");
     const wrapper = htmlUtils.createElement("div", "category__wrapper", ["category"]);
-    root.setAttribute("data-id", list.id);
     root.setAttribute("aria-labelledby", "list-name");
     root.append(wrapper);
     wrapper.append(drawTaskListHeader(list));
     const unorderedList = htmlUtils.createElement("ul", "category__collection", ["category__collection"]);
+    unorderedList.setAttribute("data-id", list.id);
     drawRelatedTaskCards(list, tasks, unorderedList, root);
     wrapper.append(unorderedList);
     wrapper.append(drawNewTaskButton(list.id));
@@ -37,39 +35,34 @@ export function drawTaskList(list, tasks) {
     return root;
 }
 function drawRelatedTaskCards(list, tasks, listElement, root) {
-    const cards = [];
+    const entries = [];
     tasks.forEach((task, index) => {
         // renderRelatedTask(task, taskListElement);
         const entryElement = htmlUtils.createElement("li", "category__entry");
         entryElement.setAttribute("data-id", task.id);
-        const { card } = drawTaskCard(task);
+        const { card, grabber } = drawTaskCard(task);
         entryElement.append(card);
-        cards.push(entryElement);
+        entries.push({ card: entryElement, grabber });
         if (index !== tasks.length - 1) {
             const divider = htmlUtils.createElement("div", "category__entry-divider", ["category__entry-divider"]);
             entryElement.append(divider);
         }
         listElement.append(entryElement);
     });
-    applyDraggableBehaviour({
-        cards,
-        list: root,
-        listId: list.id,
-    });
 }
 function drawTaskListHeader(list) {
     const header = htmlUtils.createElement("header", "category__header", ["category__header"]);
-    header.events.onContextMenu((event) => {
+    header.oncontextmenu = (event) => {
         event.preventDefault();
         event.stopPropagation(); // Prevents the event from bubbling up to parent elements
         drawListContextMenu(list, event);
-    });
+    };
     const contextMenu = htmlUtils.createElement("button", "category__context-menu", ["u-icon", "fa-ellipsis-vertical", "fa-solid"]);
-    contextMenu.events.onClick((event) => {
+    contextMenu.onclick = (event) => {
         event.preventDefault();
         event.stopPropagation();
         drawListContextMenu(list, contextMenu);
-    });
+    };
     header.append(drawTitleForms(list), contextMenu);
     return header;
 }
@@ -105,13 +98,13 @@ function drawTitleForms(list) {
         titleInput.id = titleInput.name = "list-name";
         titleInput.value = list.name;
         titleInput.placeholder = "New List";
-        titleForms.events.onSubmit((event) => {
+        titleForms.onsubmit = (event) => {
             event.preventDefault();
             updateListName(titleInput, list);
-        });
-        titleForms.events.onMouseLeave(() => {
+        };
+        titleForms.onmouseleave = () => {
             updateListName(titleInput, list);
-        });
+        };
         titleForms.append(label, titleInput);
     }
     return titleForms;

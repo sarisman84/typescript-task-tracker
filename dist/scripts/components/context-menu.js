@@ -1,4 +1,3 @@
-import { UUID } from "../core/types.js";
 import { app, pageRoot, runtime } from "../core/runtime.js";
 import { htmlUtils } from "../utility/html/html-utils.js";
 /**
@@ -94,12 +93,12 @@ export function renderContextMenu() {
             const options = content;
             options.forEach((entry) => {
                 const listEntry = htmlUtils.createElement("li", "context-menu__link", ["context-menu__link"]);
-                listEntry.events.onClick(() => {
+                listEntry.onclick = () => {
                     if (!entry.event()) {
                         currentInstructions.openState = false;
                         runtime.refreshAppRender();
                     }
-                });
+                };
                 const link = htmlUtils.createElement("span", "context-menu__label", ["context-menu__label"]);
                 link.textContent = entry.label;
                 listEntry.append(link);
@@ -110,8 +109,10 @@ export function renderContextMenu() {
         menu.style.top = `${position.y}px`;
         menu.setAttribute("data-state", currentInstructions.openState ? "open" : "close");
     }
-    pageRoot?.events.onClick(closeMenu);
-    pageRoot?.events.onContextMenu(closeMenu);
+    if (pageRoot) {
+        pageRoot.onclick = closeMenu;
+        pageRoot.oncontextmenu = closeMenu;
+    }
     app.append(menu);
 }
 function startTimer() {

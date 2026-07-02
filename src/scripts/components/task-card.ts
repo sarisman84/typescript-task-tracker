@@ -51,16 +51,15 @@ export function drawTaskCard(task: Task): TaskCard {
   ]);
   card.name = "task-card";
 
-
-  card.events.onSubmit((event) => {
+  card.onsubmit = (event) => {
     event.preventDefault();
     runtime.saveDataAndRefreshAppRenderer();
-  });
+  };
 
-  card.events.onContextMenu((event: PointerEvent) => {
+  card.oncontextmenu = (event: PointerEvent) => {
     event.preventDefault();
     drawTaskContextMenu(task, event);
-  });
+  };
 
   // Create card header and its related elements.
   const { header, grabber } = drawTaskCardHeader(task, card);
@@ -100,7 +99,7 @@ function drawTaskCardFooter(task: Task) {
       element.textContent = tag.name;
       element.setAttribute("data-tag-color", tag.color);
 
-      element.events.onContextMenu((event: PointerEvent) => {
+      element.oncontextmenu = (event: PointerEvent) => {
         event.preventDefault();
         event.stopPropagation();
         const options: ContextMenuOption[] = [
@@ -112,7 +111,7 @@ function drawTaskCardFooter(task: Task) {
           },
         ];
         ContextMenu.openMenu(options, event);
-      });
+      };
 
       return element;
     });
@@ -123,7 +122,7 @@ function drawTaskCardFooter(task: Task) {
       ["u-icon", "fa-square-plus", "fa-regular"],
     );
 
-    createTagButton.events.onClick((event: PointerEvent) => {
+    createTagButton.onclick = (event: PointerEvent) => {
       event.preventDefault();
 
       const tags = getAvailableTags(task);
@@ -133,7 +132,7 @@ function drawTaskCardFooter(task: Task) {
           (tag) => tag.label,
         )}`,
       );
-    });
+    };
 
     footer.append(...tagElements, createTagButton);
   }
@@ -228,10 +227,10 @@ function drawTaskCardHeader(
     ["card__context-menu", "u-icon", "fa-solid", "fa-ellipsis-vertical"],
   );
 
-  contextMenuButton.events.onClick((event: PointerEvent) => {
+  contextMenuButton.onclick = (event: PointerEvent) => {
     event.preventDefault();
     drawTaskContextMenu(task, contextMenuButton);
-  });
+  };
 
   header.append(dateElement, grabber, contextMenuButton);
 
@@ -260,29 +259,29 @@ function registerBodyEventListeners(
   textArea: HTMLTextAreaElement,
 ) {
   {
-    body.events.onSubmit((event: SubmitEvent) => {
+    body.onsubmit = (event: SubmitEvent) => {
       event.preventDefault();
       task.description = textArea.value;
       runtime.saveDataAndRefreshAppRenderer();
-    });
+    };
 
-    body.events.onKeyDown((event: KeyboardEvent) => {
+    body.onkeydown = (event: KeyboardEvent) => {
       if (event.shiftKey || event.key != "Enter") {
         return;
       }
       task.description = textArea.value;
       textArea.blur();
       runtime.saveDataAndRefreshAppRenderer();
-    });
+    };
 
-    body.events.onMouseLeave(() => {
+    body.onmouseleave = () => {
       if (task.description === textArea.value) {
         return;
       }
 
       task.description = textArea.value;
       runtime.saveDataAndRefreshAppRenderer();
-    });
+    };
   }
 }
 

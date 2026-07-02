@@ -24,14 +24,14 @@ export function drawTaskCard(task) {
         "card",
     ]);
     card.name = "task-card";
-    card.events.onSubmit((event) => {
+    card.onsubmit = (event) => {
         event.preventDefault();
         runtime.saveDataAndRefreshAppRenderer();
-    });
-    card.events.onContextMenu((event) => {
+    };
+    card.oncontextmenu = (event) => {
         event.preventDefault();
         drawTaskContextMenu(task, event);
-    });
+    };
     // Create card header and its related elements.
     const { header, grabber } = drawTaskCardHeader(task, card);
     //Create card body and its related elements
@@ -57,7 +57,7 @@ function drawTaskCardFooter(task) {
             const element = htmlUtils.createElement("span", `card__tag-${index}`, ["card__tag"]);
             element.textContent = tag.name;
             element.setAttribute("data-tag-color", tag.color);
-            element.events.onContextMenu((event) => {
+            element.oncontextmenu = (event) => {
                 event.preventDefault();
                 event.stopPropagation();
                 const options = [
@@ -69,16 +69,16 @@ function drawTaskCardFooter(task) {
                     },
                 ];
                 ContextMenu.openMenu(options, event);
-            });
+            };
             return element;
         });
         const createTagButton = htmlUtils.createElement("button", "task-card__tag--create-button", ["u-icon", "fa-square-plus", "fa-regular"]);
-        createTagButton.events.onClick((event) => {
+        createTagButton.onclick = (event) => {
             event.preventDefault();
             const tags = getAvailableTags(task);
             ContextMenu.openMenu(tags, createTagButton);
             console.log(`[Log][TaskCard/drawTaskCardFooter/createTagButton]: Opened context menu for task ${task.id} with tags: ${tags.map((tag) => tag.label)}`);
-        });
+        };
         footer.append(...tagElements, createTagButton);
     }
     return footer;
@@ -134,10 +134,10 @@ function drawTaskCardHeader(task, card) {
     const dateElement = htmlUtils.createElement("p", "task-card__date", ["card__date"]);
     dateElement.textContent = stringUtils.formatDate(task.createdAt);
     const contextMenuButton = htmlUtils.createElement("button", "task-card__context-menu-button", ["card__context-menu", "u-icon", "fa-solid", "fa-ellipsis-vertical"]);
-    contextMenuButton.events.onClick((event) => {
+    contextMenuButton.onclick = (event) => {
         event.preventDefault();
         drawTaskContextMenu(task, contextMenuButton);
-    });
+    };
     header.append(dateElement, grabber, contextMenuButton);
     return { header, grabber };
 }
@@ -155,26 +155,26 @@ function drawTaskContextMenu(task, position) {
 }
 function registerBodyEventListeners(body, task, textArea) {
     {
-        body.events.onSubmit((event) => {
+        body.onsubmit = (event) => {
             event.preventDefault();
             task.description = textArea.value;
             runtime.saveDataAndRefreshAppRenderer();
-        });
-        body.events.onKeyDown((event) => {
+        };
+        body.onkeydown = (event) => {
             if (event.shiftKey || event.key != "Enter") {
                 return;
             }
             task.description = textArea.value;
             textArea.blur();
             runtime.saveDataAndRefreshAppRenderer();
-        });
-        body.events.onMouseLeave(() => {
+        };
+        body.onmouseleave = () => {
             if (task.description === textArea.value) {
                 return;
             }
             task.description = textArea.value;
             runtime.saveDataAndRefreshAppRenderer();
-        });
+        };
     }
 }
 function getAvailableTags(task) {

@@ -7,11 +7,9 @@ import type { Task } from "../core/data management/task-data.js";
 import { app, runtime } from "../core/runtime.js";
 import { htmlUtils } from "../utility/html/html-utils.js";
 import stringUtils from "../utility/string-utils.js";
-import { applyDraggableBehaviour } from "../behaviours/drag-and-drop.js";
 import { ContextMenu, type ContextMenuOption } from "./context-menu.js";
 import { drawNewTaskButton } from "./new-task-button.js";
 import { drawTaskCard } from "./task-card.js";
-import { UUID } from "../core/types.js";
 
 /**
  * Renders a task list with a title form and task cards.
@@ -39,7 +37,7 @@ export function drawTaskList(
     "category__wrapper",
     ["category"],
   );
-  root.setAttribute("data-id", list.id);
+
   root.setAttribute("aria-labelledby", "list-name");
   root.append(wrapper);
 
@@ -50,6 +48,7 @@ export function drawTaskList(
     "category__collection",
     ["category__collection"],
   );
+  unorderedList.setAttribute("data-id", list.id);
   drawRelatedTaskCards(list, tasks, unorderedList, root);
 
   wrapper.append(unorderedList);
@@ -65,7 +64,7 @@ function drawRelatedTaskCards(
   listElement: HTMLElement,
   root: HTMLElement,
 ) {
-  const cards: HTMLElement[] = [];
+  const entries: { card: HTMLElement; grabber: HTMLElement }[] = [];
   tasks.forEach((task: Task, index: number) => {
     // renderRelatedTask(task, taskListElement);
     const entryElement: HTMLLIElement = htmlUtils.createElement(
@@ -74,10 +73,10 @@ function drawRelatedTaskCards(
     );
     entryElement.setAttribute("data-id", task.id);
 
-    const { card } = drawTaskCard(task);
+    const { card, grabber } = drawTaskCard(task);
 
     entryElement.append(card);
-    cards.push(entryElement);
+    entries.push({ card: entryElement, grabber });
 
     if (index !== tasks.length - 1) {
       const divider: HTMLDivElement = htmlUtils.createElement(
@@ -90,12 +89,6 @@ function drawRelatedTaskCards(
 
     listElement.append(entryElement);
   });
-
-  applyDraggableBehaviour({
-    cards,
-    list: root,
-    listId: list.id,
-  });
 }
 
 function drawTaskListHeader(list: TaskList) {
@@ -105,22 +98,24 @@ function drawTaskListHeader(list: TaskList) {
     ["category__header"],
   );
 
-  header.events.onContextMenu((event: PointerEvent) => {
+  header.oncontextmenu = (event: PointerEvent) => {
     event.preventDefault();
     event.stopPropagation(); // Prevents the event from bubbling up to parent elements
     drawListContextMenu(list, event);
-  });
+  };
 
   const contextMenu: HTMLButtonElement = htmlUtils.createElement(
     "button",
     "category__context-menu",
     ["u-icon", "fa-ellipsis-vertical", "fa-solid"],
   );
-  contextMenu.events.onClick((event: PointerEvent) => {
+
+  contextMenu.onclick = (event: PointerEvent) => {
     event.preventDefault();
     event.stopPropagation();
     drawListContextMenu(list, contextMenu);
-  });
+  };
+
   header.append(drawTitleForms(list), contextMenu);
   return header;
 }
@@ -171,14 +166,14 @@ function drawTitleForms(list: TaskList): HTMLFormElement {
     titleInput.value = list.name;
     titleInput.placeholder = "New List";
 
-    titleForms.events.onSubmit((event: Event) => {
+    titleForms.onsubmit = (event: Event) => {
       event.preventDefault();
       updateListName(titleInput, list);
-    });
+    };
 
-    titleForms.events.onMouseLeave(() => {
+    titleForms.onmouseleave = () => {
       updateListName(titleInput, list);
-    });
+    };
 
     titleForms.append(label, titleInput);
   }

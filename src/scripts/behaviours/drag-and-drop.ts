@@ -1,38 +1,90 @@
-import type { TaskList } from "../core/data management/list-data.js";
-import type { Task } from "../core/data management/task-data.js";
+/**
+ * Drag and drop behaviour for task cards between collections.
+ *
+ * This module implements HTML5 drag-and-drop functionality that allows users to
+ * reassign tasks from one list (category) to another by dragging card elements.
+ * The actual DOM manipulation is kept minimal; the primary side effect is updating
+ * the task's `listId` in the runtime data store, which triggers a renderer refresh.
+ */
 import { tasks, runtime } from "../core/runtime.js";
 import { UUID } from "../core/types.js";
 
+/** The ID of the task currently being dragged, or empty if nothing is being dragged. */
 let draggedElement: UUID = UUID.empty;
 
+/**
+ * Description for applying drag-and-drop behaviour to a set of cards and collections.
+ */
 export interface DragBehaviourDesc {
-  cards: HTMLElement[];
-  list: HTMLElement;
+  /** The list container elements that serve as valid drop targets. */
+  collections: HTMLElement[];
+  /** Pairs of card elements and their associated grabber elements. */
+  entries: {
+    /** The task card element. */
+    card: HTMLElement;
+    /** The grabber/handle element used to initiate a drag. */
+    grabber: HTMLElement;
+  }[];
+  /** The list ID that the cards in `entries` originally belong to. */
   listId: UUID;
 }
 
+/**
+ * Applies drag-and-drop behaviour to the provided entries and collections.
+ *
+ * For each card/grabber pair, enables dragging when the grabber is hovered.
+ * For each collection, makes it a valid drop target by handling `dragover`
+ * and `drop` events.
+ *
+ * @param desc - The description containing collections, entries, and list information.
+ */
 export function applyDraggableBehaviour(desc: DragBehaviourDesc) {
-  const { cards, list, listId } = desc;
+  const { collections, entries, listId } = desc;
 
-  cards.forEach((cardElement: HTMLElement) => {
-    const taskId: UUID = cardElement.getAttribute("data-id") ?? UUID.empty;
-    if (taskId == UUID.empty) {
-      return;
-    }
-    applyDragBehaviourToCard(cardElement, listId, taskId);
+  entries.forEach(({ card, grabber }) => {
+    applyDragBehaviourToCard(collections, grabber, card, listId);
   });
 
-  applyDragBehaviourToList(list);
+  collections.forEach((_, index: number) => {
+    applyDragBehaviourToCollection(collections, index);
+  });
 }
 
+/**
+ * Applies drag-to-start behaviour to a single card via its grabber element.
+ *
+ * When the user hovers over the grabber, the card becomes draggable. On drag
+ * start, all collections are visually marked as drop targets and the card is
+ * lifted visually. The dragged task ID is stored in module state.
+ *
+ * @param collections - All valid drop target collections.
+ * @param grabber - The element that initiates a drag when hovered.
+ * @param cardElement - The card element to make draggable.
+ * @param parentListId - The list this card currently belongs to (unused for logic but passed through).
+ * @param currentTaskId - The ID of the task associated with this card.
+ */
 function applyDragBehaviourToCard(
+  collections: HTMLElement[],
+  grabber: HTMLElement,
   cardElement: HTMLElement,
-  parentListId: UUID,
   currentTaskId: UUID,
 ) {
-  cardElement.draggable = true;
+  /** When hovering the grabber, enable dragging on the card. */
+  grabber.onmouseenter = () => {
+    cardElement.draggable = true;
+  };
+
+  /** When leaving the grabber, disable dragging to avoid accidental drags. */
+  grabber.onmouseleave = () => {
+    cardElement.draggable = false;
+  };
+
+  /**
+   * Callback invoked when a drag operation begins on this card.
+   * Marks all collections as potential drop targets and lifts the card visually.
+   */
   function onStartDraggingCard(event: DragEvent) {
-    queryAllCollections(parentListId).forEach((collection) => {
+    collections.forEach((collection) => {
       collection.classList.add("marked-for-drop");
     });
 
@@ -48,15 +100,40 @@ function applyDragBehaviourToCard(
   };
 }
 
-function applyDragBehaviourToList(collection: HTMLElement) {
+/**
+ * Applies drop-target behaviour to a single collection element.
+ *
+ * Prevents the default drag-over handling to allow dropping, and on `drop`
+ * moves the currently dragged task into this collection's list. If the drop
+ * target is not a valid category collection, or if the task doesn't exist
+ * in the store, the drop is silently ignored.
+ *
+ * @param collection - The collection element to make droppable.
+ */
+function applyDragBehaviourToCollection(
+  collections: HTMLElement[],
+  currentCollectionIndex: number,
+) {
+  const collection = collections[currentCollectionIndex];
+  if (!collection) {
+    return;
+  }
+  /** Allow this collection to be a drop target by preventing default drag-over behaviour. */
   collection.ondragover = (e: DragEvent) => {
     e.preventDefault();
   };
 
+  /**
+   * Handle a drop event on this collection.
+   *
+   * Validates that the drop target is a valid category collection and that the
+   * dragged task exists in the store. If so, updates the task's `listId` to this
+   * collection's ID and refreshes the app renderer.
+   */
   collection.ondrop = (e: DragEvent) => {
     e.preventDefault();
 
-    queryAllCollections().forEach((collection) => {
+    collections.forEach((collection) => {
       collection.classList.remove("marked-for-drop");
     });
 
@@ -65,8 +142,7 @@ function applyDragBehaviourToList(collection: HTMLElement) {
       return;
     }
     const targetListId: UUID =
-      targetElement.parentElement?.parentElement?.getAttribute("data-id") ??
-      UUID.empty;
+      targetElement.getAttribute("data-id") ?? UUID.empty;
 
     if (targetListId === UUID.empty) {
       return;
@@ -86,36 +162,4 @@ function applyDragBehaviourToList(collection: HTMLElement) {
     task.listId = targetListId;
     runtime.saveDataAndRefreshAppRenderer();
   };
-}
-
-function queryAllCollections(...idsToAvoid: UUID[]): HTMLElement[] {
-  const result: HTMLElement[] = [];
-  const foundCollections = document.querySelectorAll("#category__collection");
-  for (const collection of foundCollections) {
-    const parent = collection.parentElement;
-    if (!parent) {
-      continue;
-    }
-
-    const id = parent.getAttribute("data-id");
-    if (!id || idsToAvoid.find((colId) => colId === id)) {
-      continue;
-    }
-
-    result.push(collection as HTMLElement);
-  }
-  return result;
-}
-
-function queryCards(...idsToSearch: UUID[]): HTMLElement[] {
-  const result: HTMLElement[] = [];
-  const foundCards = document.querySelectorAll("#category__entry");
-  for (const card of foundCards) {
-    const id = card.getAttribute("data-id");
-    if (!id || !idsToSearch.find((cardId) => cardId === id)) {
-      continue;
-    }
-    result.push(card as HTMLElement);
-  }
-  return result;
 }

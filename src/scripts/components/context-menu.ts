@@ -1,4 +1,3 @@
-import { UUID } from "../core/types.js";
 import { app, pageRoot, runtime } from "../core/runtime.js";
 import { htmlUtils } from "../utility/html/html-utils.js";
 
@@ -148,12 +147,12 @@ export function renderContextMenu(): void {
           "context-menu__link",
           ["context-menu__link"],
         );
-        listEntry.events.onClick(() => {
+        listEntry.onclick = () => {
           if (!entry.event()) {
             currentInstructions.openState = false;
             runtime.refreshAppRender();
           }
-        });
+        };
         const link: HTMLElement = htmlUtils.createElement(
           "span",
           "context-menu__label",
@@ -174,8 +173,10 @@ export function renderContextMenu(): void {
       currentInstructions.openState ? "open" : "close",
     );
   }
-  pageRoot?.events.onClick(closeMenu);
-  pageRoot?.events.onContextMenu(closeMenu);
+  if (pageRoot) {
+    pageRoot.onclick = closeMenu;
+    pageRoot.oncontextmenu = closeMenu;
+  }
 
   app.append(menu);
 }
