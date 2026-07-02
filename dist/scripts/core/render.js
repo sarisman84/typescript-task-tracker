@@ -4,6 +4,7 @@ import { drawNewListButton } from "../components/new-list-button.js";
 import { drawTaskList } from "../components/task-list.js";
 import { htmlUtils } from "../utility/html/html-utils.js";
 import { app, pageRoot, runtime, taskLists, tasks } from "./runtime.js";
+import { UUID } from "./types.js";
 /**
  * Renders all tasks and task lists into the application container.
  */
@@ -37,9 +38,9 @@ export function renderTaskboard() {
                 return {
                     card: card,
                     grabber: card.querySelector("#task-card__grabber"),
+                    taskId: card.getAttribute("data-id") ?? UUID.empty,
                 };
             }),
-            listId: id,
         };
         applyDraggableBehaviour(desc);
     });

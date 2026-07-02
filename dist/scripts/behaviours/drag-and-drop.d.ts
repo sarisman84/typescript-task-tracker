@@ -11,9 +11,8 @@ export interface DragBehaviourDesc {
         card: HTMLElement;
         /** The grabber/handle element used to initiate a drag. */
         grabber: HTMLElement;
+        taskId: UUID;
     }[];
-    /** The list ID that the cards in `entries` originally belong to. */
-    listId: UUID;
 }
 /**
  * Applies drag-and-drop behaviour to the provided entries and collections.

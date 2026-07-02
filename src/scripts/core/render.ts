@@ -9,7 +9,7 @@ import { htmlUtils } from "../utility/html/html-utils.js";
 import type { TaskList } from "./data management/list-data.js";
 import type { Task } from "./data management/task-data.js";
 import { app, pageRoot, runtime, taskLists, tasks } from "./runtime.js";
-import type { UUID } from "./types.js";
+import { UUID } from "./types.js";
 
 /**
  * Renders all tasks and task lists into the application container.
@@ -53,9 +53,9 @@ export function renderTaskboard(): void {
         return {
           card: card as HTMLElement,
           grabber: card.querySelector("#task-card__grabber") as HTMLElement,
+          taskId: card.getAttribute("data-id") ?? UUID.empty,
         };
       }),
-      listId: id,
     };
     applyDraggableBehaviour(desc);
   });

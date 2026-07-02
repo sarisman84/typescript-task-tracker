@@ -193,7 +193,6 @@ img {
 }
 
 .marked-for-drop {
-  background-color: var(--primary-100);
   z-index: 1000;
 }
 
@@ -358,6 +357,7 @@ main {
   justify-content: stretch;
 
   padding-block: 1rem;
+  padding-inline: 0.5rem;
 }
 
 .category__entry-divider {

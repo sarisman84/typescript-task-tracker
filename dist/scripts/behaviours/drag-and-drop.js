@@ -20,9 +20,9 @@ let draggedElement = UUID.empty;
  * @param desc - The description containing collections, entries, and list information.
  */
 export function applyDraggableBehaviour(desc) {
-    const { collections, entries, listId } = desc;
-    entries.forEach(({ card, grabber }) => {
-        applyDragBehaviourToCard(collections, grabber, card, listId);
+    const { collections, entries } = desc;
+    entries.forEach(({ card, grabber, taskId }) => {
+        applyDragBehaviourToCard(collections, grabber, card, taskId);
     });
     collections.forEach((_, index) => {
         applyDragBehaviourToCollection(collections, index);
@@ -62,6 +62,7 @@ function applyDragBehaviourToCard(collections, grabber, cardElement, currentTask
         const self = event.target;
         self.classList.add("card--lifted");
         event.dataTransfer.effectAllowed = "move";
+        console.log(`[Log][applyDraggableBehaviour/onStartDraggingCard]: Started dragging card with ID: ${currentTaskId}.`);
     }
     cardElement.ondragstart = (e) => {
         onStartDraggingCard(e);
@@ -80,6 +81,7 @@ function applyDragBehaviourToCard(collections, grabber, cardElement, currentTask
 function applyDragBehaviourToCollection(collections, currentCollectionIndex) {
     const collection = collections[currentCollectionIndex];
     if (!collection) {
+        console.error(`[Error][applyDraggableBehaviour/applyDragBehaviourToCollection]: Collection at index ${currentCollectionIndex} is undefined.`);
         return;
     }
     /** Allow this collection to be a drop target by preventing default drag-over behaviour. */
@@ -100,23 +102,28 @@ function applyDragBehaviourToCollection(collections, currentCollectionIndex) {
         });
         const targetElement = e.target;
         if (!targetElement.id.match("category__collection")) {
+            console.error(`[Error][applyDraggableBehaviour/applyDragBehaviourToCollection]: ${targetElement.id ?? targetElement.tagName} is not a valid category collection.`);
             return;
         }
         const targetListId = targetElement.getAttribute("data-id") ?? UUID.empty;
         if (targetListId === UUID.empty) {
+            console.error(`[Error][applyDraggableBehaviour/applyDragBehaviourToCollection]: Invalid list ID for drop target ${targetElement.id ?? targetElement.tagName}: ${targetListId}`);
             return;
         }
         const taskId = draggedElement;
         const taskIndex = tasks.value.findIndex((task) => task.id === taskId);
         if (taskIndex === -1) {
+            console.error(`[Error][applyDraggableBehaviour/applyDragBehaviourToCollection]: Task with ID ${taskId} not found in tasks array.`);
             return;
         }
         const task = tasks.value[taskIndex];
         if (!task) {
+            console.error(`[Error][applyDraggableBehaviour/applyDragBehaviourToCollection]: Task with ID ${taskId} not found in tasks array.`);
             return;
         }
         task.listId = targetListId;
         runtime.saveDataAndRefreshAppRenderer();
+        console.log(`[Log][applyDraggableBehaviour/applyDragBehaviourToCollection]: Moved task ${task.id} to list ${targetListId}.`);
     };
 }
 //# sourceMappingURL=drag-and-drop.js.map
