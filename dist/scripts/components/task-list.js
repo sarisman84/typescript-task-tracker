@@ -2,6 +2,7 @@ import { deleteTaskList, } from "../core/data management/list-data.js";
 import { app, runtime } from "../core/runtime.js";
 import { htmlUtils } from "../utility/html/html-utils.js";
 import stringUtils from "../utility/string-utils.js";
+import { applyDraggableBehavior } from "../behaviours/drag-and-drop.js";
 import { ContextMenu } from "./context-menu.js";
 import { drawNewTaskButton } from "./new-task-button.js";
 import { drawTaskCard } from "./task-card.js";
@@ -19,35 +20,43 @@ import { drawTaskCard } from "./task-card.js";
 export function drawTaskList(list, tasks) {
     if (!app) {
         console.error(`[Error]: App container not found. Cannot render task list.`);
-        return document.createElement("div"); // Return an empty div to avoid further errors
+        return { dropArea: null, article: null }; // Return an empty div to avoid further errors
     }
-    const ulEntry = htmlUtils.createElement("ul", "task-list__entry");
-    const article = htmlUtils.createElement("article", "task-list", ["task-list"]);
+    const article = htmlUtils.createElement("article", "category");
+    const wrapper = htmlUtils.createElement("div", "category__wrapper", ["category"]);
+    article.setAttribute("data-id", list.id);
     article.setAttribute("aria-labelledby", "list-name");
-    article.append(drawTaskListHeader(list));
-    drawRelatedTaskCards(tasks, article);
-    article.append(drawNewTaskButton(list.id));
-    ulEntry.append(article);
-    app.append(ulEntry);
-    return article;
+    article.append(wrapper);
+    wrapper.append(drawTaskListHeader(list));
+    const dropArea = htmlUtils.createElement("div", "category__drop-area", ["category__drop-area", "fa-box-tissue", "fa-solid"]);
+    const unorderedList = htmlUtils.createElement("ul", "category__collection", ["category__collection"]);
+    drawRelatedTaskCards(list, tasks, unorderedList, dropArea);
+    wrapper.append(unorderedList);
+    wrapper.append(dropArea);
+    wrapper.append(drawNewTaskButton(list.id));
+    app.append(article);
+    return { dropArea, article };
 }
-function drawRelatedTaskCards(tasks, article) {
+function drawRelatedTaskCards(list, tasks, article, dropArea) {
     tasks.forEach((task) => {
         // renderRelatedTask(task, taskListElement);
         const liElement = htmlUtils.createElement("li", "task-entry");
+        liElement.setAttribute("data-task-id", task.id);
+        liElement.setAttribute("data-list-id", task.listId);
         const { card, grabber } = drawTaskCard(task);
+        applyDraggableBehavior(task, list, dropArea, card, grabber);
         liElement.append(card);
         article.append(liElement);
     });
 }
 function drawTaskListHeader(list) {
-    const header = htmlUtils.createElement("header", "task-list__header", ["task-list__header"]);
+    const header = htmlUtils.createElement("header", "category__header", ["category__header"]);
     header.events.onContextMenu((event) => {
         event.preventDefault();
         event.stopPropagation(); // Prevents the event from bubbling up to parent elements
         drawListContextMenu(list, event);
     });
-    const contextMenu = htmlUtils.createElement("button", "task-list__context-menu", ["u-icon", "fa-ellipsis-vertical", "fa-solid"]);
+    const contextMenu = htmlUtils.createElement("button", "category__context-menu", ["u-icon", "fa-ellipsis-vertical", "fa-solid"]);
     contextMenu.events.onClick((event) => {
         event.preventDefault();
         event.stopPropagation();
@@ -80,10 +89,10 @@ function drawListContextMenu(list, position) {
 function drawTitleForms(list) {
     const titleForms = htmlUtils.createElement("form");
     {
-        const label = htmlUtils.createElement("label", "task-list__title-label", ["sc-only"]);
+        const label = htmlUtils.createElement("label", "category__title-label", ["sc-only"]);
         label.textContent = "List Name";
         label.setAttribute("for", "list-name");
-        const titleInput = htmlUtils.createElement("input", "task-list__title", ["task-list__title"]);
+        const titleInput = htmlUtils.createElement("input", "category__title", ["category__title"]);
         titleInput.type = "text";
         titleInput.id = titleInput.name = "list-name";
         titleInput.value = list.name;

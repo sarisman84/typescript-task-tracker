@@ -113,6 +113,9 @@ function registerEventListeners(element) {
         onMouseLeave: (callback) => {
             element.addEventListener("mouseleave", callback);
         },
+        onMouseEnter: (callback) => {
+            element.addEventListener("mouseenter", callback);
+        },
         // --- Keyboard Events ---
         onKeyDown: (callback) => {
             element.addEventListener("keydown", callback);
@@ -144,25 +147,54 @@ function registerEventListeners(element) {
         },
         // --- Drag and Drop Events ---
         onDrag: (callback) => {
-            element.addEventListener("drag", callback);
+            const wrapper = (event) => {
+                registerDragEvents(event);
+                callback(event);
+            };
+            element.addEventListener("drag", wrapper);
         },
         onDragEnd: (callback) => {
-            element.addEventListener("dragend", callback);
+            const wrapper = (event) => {
+                registerDragEvents(event);
+                callback(event);
+            };
+            element.addEventListener("dragend", wrapper);
         },
         onDragEnter: (callback) => {
-            element.addEventListener("dragenter", callback);
+            const wrapper = (event) => {
+                registerDragEvents(event);
+                callback(event);
+            };
+            element.addEventListener("dragenter", wrapper);
         },
         onDragLeave: (callback) => {
-            element.addEventListener("dragleave", callback);
+            const wrapper = (event) => {
+                registerDragEvents(event);
+                callback(event);
+            };
+            element.addEventListener("dragleave", wrapper);
         },
         onDragOver: (callback) => {
-            element.addEventListener("dragover", callback);
+            const wrapper = (event) => {
+                registerDragEvents(event);
+                callback(event);
+            };
+            element.addEventListener("dragover", wrapper);
         },
         onDragStart: (callback) => {
-            element.addEventListener("dragstart", callback);
+            const wrapper = (event) => {
+                registerDragEvents(event);
+                callback(event);
+            };
+            element.addEventListener("dragstart", wrapper);
         },
         onDrop: (callback) => {
-            element.addEventListener("drop", callback);
+            const wrapper = (event) => {
+                console.log("drop");
+                registerDragEvents(event);
+                callback(event);
+            };
+            element.addEventListener("drop", wrapper);
         },
         // --- Clipboard Events ---
         onCopy: (callback) => {
@@ -204,5 +236,24 @@ function registerEventListeners(element) {
             element.addEventListener("touchcancel", callback);
         },
     };
+    function registerDragEvents(event) {
+        event.setData = (type, obj) => {
+            const data = JSON.stringify(obj);
+            event.dataTransfer?.items.add(data, type);
+        };
+        event.getData = (type) => {
+            if (!event.dataTransfer)
+                return null;
+            for (const item of event.dataTransfer.items) {
+                if (item.kind === "string" && item.type === type) {
+                    item.getAsString((data) => {
+                        const obj = JSON.parse(data);
+                        return obj;
+                    });
+                }
+            }
+            return null;
+        };
+    }
 }
 //# sourceMappingURL=html-utils.js.map

@@ -47,7 +47,7 @@ const storageUtils = {
         console.log(
           `[Log][Storage/loadDataFromStorage]: Loaded data for ${key} to:`,
         ); // Debug log
-        console.table(boundDataRegistry[key]); // Debug log
+        console.table(boundDataRegistry[key].value); // Debug log
       }
     });
 

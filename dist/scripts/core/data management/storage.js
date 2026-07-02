@@ -28,7 +28,7 @@ const storageUtils = {
             if (data && boundDataRegistry[key]) {
                 boundDataRegistry[key].value = JSON.parse(data);
                 console.log(`[Log][Storage/loadDataFromStorage]: Loaded data for ${key} to:`); // Debug log
-                console.table(boundDataRegistry[key]); // Debug log
+                console.table(boundDataRegistry[key].value); // Debug log
             }
         });
         console.log("[Log][Storage/loadDataFromStorage]: Data loaded from storage successfully."); // Debug log

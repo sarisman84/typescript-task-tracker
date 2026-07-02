@@ -7,6 +7,7 @@ import type { Task } from "../core/data management/task-data.js";
 import { app, runtime } from "../core/runtime.js";
 import { htmlUtils } from "../utility/html/html-utils.js";
 import stringUtils from "../utility/string-utils.js";
+import { applyDraggableBehavior } from "../behaviours/drag-and-drop.js";
 import { ContextMenu, type ContextMenuOption } from "./context-menu.js";
 import { drawNewTaskButton } from "./new-task-button.js";
 import { drawTaskCard } from "./task-card.js";
@@ -22,40 +23,68 @@ import { drawTaskCard } from "./task-card.js";
  * @param tasks - The array of `Task` objects to render as cards within the list
  * @returns A populated `<ul>` element containing the rendered task list
  */
-export function drawTaskList(list: TaskList, tasks: Task[]): HTMLElement {
+export function drawTaskList(
+  list: TaskList,
+  tasks: Task[],
+): { dropArea: HTMLElement | null; article: HTMLElement | null } {
   if (!app) {
     console.error(`[Error]: App container not found. Cannot render task list.`);
-    return document.createElement("div"); // Return an empty div to avoid further errors
+    return { dropArea: null, article: null }; // Return an empty div to avoid further errors
   }
 
-  const ulEntry: HTMLUListElement = htmlUtils.createElement(
-    "ul",
-    "task-list__entry",
-  );
-  const article: HTMLDivElement = htmlUtils.createElement(
+  const article: HTMLUListElement = htmlUtils.createElement(
     "article",
-    "task-list",
-    ["task-list"],
+    "category",
   );
+  const wrapper: HTMLElement = htmlUtils.createElement(
+    "div",
+    "category__wrapper",
+    ["category"],
+  );
+  article.setAttribute("data-id", list.id);
   article.setAttribute("aria-labelledby", "list-name");
-  article.append(drawTaskListHeader(list));
+  article.append(wrapper);
 
-  drawRelatedTaskCards(tasks, article);
-  article.append(drawNewTaskButton(list.id));
+  wrapper.append(drawTaskListHeader(list));
 
-  ulEntry.append(article);
-  app.append(ulEntry);
-  return article;
+  const dropArea: HTMLElement = htmlUtils.createElement(
+    "div",
+    "category__drop-area",
+    ["category__drop-area", "fa-box-tissue", "fa-solid"],
+  );
+
+  const unorderedList: HTMLDivElement = htmlUtils.createElement(
+    "ul",
+    "category__collection",
+    ["category__collection"],
+  );
+  drawRelatedTaskCards(list, tasks, unorderedList, dropArea);
+
+  wrapper.append(unorderedList);
+  wrapper.append(dropArea);
+  wrapper.append(drawNewTaskButton(list.id));
+
+  app.append(article);
+  return { dropArea, article };
 }
 
-function drawRelatedTaskCards(tasks: Task[], article: HTMLDivElement) {
+function drawRelatedTaskCards(
+  list: TaskList,
+  tasks: Task[],
+  article: HTMLDivElement,
+  dropArea: HTMLElement,
+) {
   tasks.forEach((task: Task) => {
     // renderRelatedTask(task, taskListElement);
     const liElement: HTMLLIElement = htmlUtils.createElement(
       "li",
       "task-entry",
     );
+    liElement.setAttribute("data-task-id", task.id);
+    liElement.setAttribute("data-list-id", task.listId);
+
     const { card, grabber } = drawTaskCard(task);
+    applyDraggableBehavior(task, list, dropArea, card, grabber);
 
     liElement.append(card);
     article.append(liElement);
@@ -65,8 +94,8 @@ function drawRelatedTaskCards(tasks: Task[], article: HTMLDivElement) {
 function drawTaskListHeader(list: TaskList) {
   const header: HTMLElement = htmlUtils.createElement(
     "header",
-    "task-list__header",
-    ["task-list__header"],
+    "category__header",
+    ["category__header"],
   );
 
   header.events.onContextMenu((event: PointerEvent) => {
@@ -77,7 +106,7 @@ function drawTaskListHeader(list: TaskList) {
 
   const contextMenu: HTMLButtonElement = htmlUtils.createElement(
     "button",
-    "task-list__context-menu",
+    "category__context-menu",
     ["u-icon", "fa-ellipsis-vertical", "fa-solid"],
   );
   contextMenu.events.onClick((event: PointerEvent) => {
@@ -119,7 +148,7 @@ function drawTitleForms(list: TaskList): HTMLFormElement {
   {
     const label: HTMLLabelElement = htmlUtils.createElement(
       "label",
-      "task-list__title-label",
+      "category__title-label",
       ["sc-only"],
     );
     label.textContent = "List Name";
@@ -127,8 +156,8 @@ function drawTitleForms(list: TaskList): HTMLFormElement {
 
     const titleInput: HTMLInputElement = htmlUtils.createElement(
       "input",
-      "task-list__title",
-      ["task-list__title"],
+      "category__title",
+      ["category__title"],
     );
     titleInput.type = "text";
     titleInput.id = titleInput.name = "list-name";

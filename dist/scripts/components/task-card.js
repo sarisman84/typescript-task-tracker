@@ -20,10 +20,10 @@ import { ContextMenu } from "./context-menu.js";
  */
 export function drawTaskCard(task) {
     const { id } = task;
-    const card = htmlUtils.createElement("form", `card_${id}`, [
+    const card = htmlUtils.createElement("form", `task-card`, [
         "card",
     ]);
-    card.name = card.id;
+    card.name = "task-card";
     card.events.onSubmit((event) => {
         event.preventDefault();
         runtime.saveDataAndRefreshAppRenderer();

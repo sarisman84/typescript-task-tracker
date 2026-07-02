@@ -46,10 +46,12 @@ export type TaskCard = {
 export function drawTaskCard(task: Task): TaskCard {
   const { id } = task;
 
-  const card: HTMLFormElement = htmlUtils.createElement("form", `card_${id}`, [
+  const card: HTMLFormElement = htmlUtils.createElement("form", `task-card`, [
     "card",
   ]);
-  card.name = card.id;
+  card.name = "task-card";
+
+
   card.events.onSubmit((event) => {
     event.preventDefault();
     runtime.saveDataAndRefreshAppRenderer();

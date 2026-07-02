@@ -14,6 +14,11 @@ type Vector2 = {
 };
 
 declare global {
+  interface DragEvent {
+    setData<T>(type: string, obj: T): void;
+    getData<T>(type: string): T | null; // This is a simplification, actual implementation may vary
+  }
+
   interface HTMLElement {
     events: {
       // --- Mouse Events ---
@@ -26,6 +31,7 @@ declare global {
       onMouseMove: AddEventListener<"mousemove">;
       onMouseOver: AddEventListener<"mouseover">;
       onMouseLeave: AddEventListener<"mouseleave">;
+      onMouseEnter: AddEventListener<"mouseenter">;
 
       // --- Keyboard Events ---
       onKeyDown: AddEventListener<"keydown">;
@@ -212,6 +218,9 @@ function registerEventListeners<TElement extends HTMLElement>(
     onMouseLeave: (callback) => {
       element.addEventListener("mouseleave", callback);
     },
+    onMouseEnter: (callback) => {
+      element.addEventListener("mouseenter", callback);
+    },
 
     // --- Keyboard Events ---
     onKeyDown: (callback) => {
@@ -246,25 +255,54 @@ function registerEventListeners<TElement extends HTMLElement>(
 
     // --- Drag and Drop Events ---
     onDrag: (callback) => {
-      element.addEventListener("drag", callback);
+      const wrapper = (event: DragEvent) => {
+        registerDragEvents(event);
+        callback(event);
+      };
+      element.addEventListener("drag", wrapper);
     },
     onDragEnd: (callback) => {
-      element.addEventListener("dragend", callback);
+      const wrapper = (event: DragEvent) => {
+        registerDragEvents(event);
+        callback(event);
+      };
+      element.addEventListener("dragend", wrapper);
     },
     onDragEnter: (callback) => {
-      element.addEventListener("dragenter", callback);
+      const wrapper = (event: DragEvent) => {
+        registerDragEvents(event);
+        callback(event);
+      };
+      element.addEventListener("dragenter", wrapper);
     },
     onDragLeave: (callback) => {
-      element.addEventListener("dragleave", callback);
+      const wrapper = (event: DragEvent) => {
+        registerDragEvents(event);
+        callback(event);
+      };
+      element.addEventListener("dragleave", wrapper);
     },
     onDragOver: (callback) => {
-      element.addEventListener("dragover", callback);
+      const wrapper = (event: DragEvent) => {
+        registerDragEvents(event);
+        callback(event);
+      };
+      element.addEventListener("dragover", wrapper);
     },
     onDragStart: (callback) => {
-      element.addEventListener("dragstart", callback);
+      const wrapper = (event: DragEvent) => {
+        registerDragEvents(event);
+        callback(event);
+      };
+      element.addEventListener("dragstart", wrapper);
     },
     onDrop: (callback) => {
-      element.addEventListener("drop", callback);
+      const wrapper = (event: DragEvent) => {
+        console.log("drop")
+        registerDragEvents(event);
+        callback(event);
+      };
+      element.addEventListener("drop", wrapper);
     },
 
     // --- Clipboard Events ---
@@ -309,4 +347,24 @@ function registerEventListeners<TElement extends HTMLElement>(
       element.addEventListener("touchcancel", callback);
     },
   };
+
+  function registerDragEvents(event: DragEvent): void {
+    event.setData = <T>(type: string, obj: T) => {
+      const data = JSON.stringify(obj);
+      event.dataTransfer?.items.add(data, type);
+    };
+
+    event.getData = <T>(type: string) => {
+      if (!event.dataTransfer) return null;
+      for (const item of event.dataTransfer.items) {
+        if (item.kind === "string" && item.type === type) {
+          item.getAsString((data) => {
+            const obj: T = JSON.parse(data);
+            return obj;
+          });
+        }
+      }
+      return null;
+    };
+  }
 }

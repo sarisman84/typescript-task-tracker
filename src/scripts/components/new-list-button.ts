@@ -3,10 +3,15 @@ import { runtime } from "../core/runtime.js";
 import { htmlUtils } from "../utility/html/html-utils.js";
 
 export function drawNewListButton(): HTMLElement {
-  const section: HTMLElement = htmlUtils.createElement("section", "list-entry");
-  const content: HTMLDivElement = htmlUtils.createElement("div", "new-list", [
-    "task-list",
-  ]);
+  const section: HTMLElement = htmlUtils.createElement(
+    "section",
+    "category__empty",
+  );
+  const content: HTMLDivElement = htmlUtils.createElement(
+    "div",
+    "category__content",
+    ["category"],
+  );
   {
     const newListButton: HTMLButtonElement = htmlUtils.createElement(
       "button",

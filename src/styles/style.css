@@ -298,7 +298,7 @@ main {
    Container for organizing tasks in a grid layout.
    Supports responsive columns based on available width.
    ========================================== */
-.task-list {
+.category {
   display: grid;
 
   /* Uses the defined minimum column width with auto-fit */
@@ -309,13 +309,26 @@ main {
   align-content: start;
 
   background-color: var(--color-bg-task-list);
-
-  border-radius: var(--border-radius-card);
   padding: var(--padding-content);
   margin-block-end: var(--space-unit);
+  border-radius: var(--border-radius-card);
 }
 
-.task-list__header {
+.category__drop-area {
+  height: 15rem;
+  display: none;
+  justify-content: center;
+  align-items: center;
+
+  color: var(--accent-200);
+}
+
+.category__drop-area[data-state="active"] {
+  display: flex;
+  z-index: 100;
+}
+
+.category__header {
   display: flex;
   justify-content: space-between;
   width: 100%;
@@ -326,7 +339,7 @@ main {
     var(--border-color-task-header);
 }
 
-.task-list__title {
+.category__title {
   font-size: 1.25rem;
   color: var(--text-900);
   font-weight: var(--font-weight-bold);
@@ -338,13 +351,19 @@ main {
   width: var(--width-title-input);
 }
 
-.task-list__title:hover {
+.category__title:hover {
   color: var(--accent-800);
 }
 
-.task-list__title:focus-visible {
+.category__title:focus-visible {
   color: var(--accent-700);
   outline: none;
+}
+
+.category__collection {
+  display: grid;
+  grid-template-columns: subgrid;
+  gap: 1rem;
 }
 
 /* ==========================================
@@ -368,6 +387,10 @@ main {
   width: 100%;
 }
 
+.card--lifted {
+  filter: opacity(0.7);
+}
+
 .card--empty {
   display: flex;
   justify-content: center;
@@ -389,8 +412,6 @@ main {
 
 .card__grabber {
   color: var(--primary-400);
-  position: absolute;
-  left: 9.5rem;
 }
 
 .card__grabber:hover {

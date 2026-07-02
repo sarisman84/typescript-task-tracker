@@ -6,6 +6,10 @@ type Vector2 = {
     y: number;
 };
 declare global {
+    interface DragEvent {
+        setData<T>(type: string, obj: T): void;
+        getData<T>(type: string): T | null;
+    }
     interface HTMLElement {
         events: {
             onClick: AddEventListener<"click">;
@@ -17,6 +21,7 @@ declare global {
             onMouseMove: AddEventListener<"mousemove">;
             onMouseOver: AddEventListener<"mouseover">;
             onMouseLeave: AddEventListener<"mouseleave">;
+            onMouseEnter: AddEventListener<"mouseenter">;
             onKeyDown: AddEventListener<"keydown">;
             onKeyPress: AddEventListener<"keypress">;
             onKeyUp: AddEventListener<"keyup">;
